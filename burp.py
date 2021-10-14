@@ -56,9 +56,9 @@ def chains(tree2: ParentedTree) -> Iterable[Tuple[ParentedTree, ...]]:
     A unary chain is a sequence of all nodes with the same span, ordered from
     highest to lowest.
     """
-    if all(is_leaf(c) for c in tree2):
+    if any(is_leaf(c) for c in tree2):
         assert len(tree2) == 1
-    if not is_leaf(tree2[0]):
+    else:
         for child in tree2:
             yield from chains(child)
     if tree2.parent != None and len(tree2.parent) == 1:
