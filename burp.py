@@ -169,8 +169,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         bottom1 = ()        
     # Move down
     def move(t: ParentedTree) -> None:
-        span1 = span(t)
-        if span1 <= target_span and not span1 <= span(bottom1):
+        if span(t) <= target_span:
             if t.parent is None:
                 parts.remove(t)
             else:
@@ -214,7 +213,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     # Move in 
     parts_ = tuple(parts)
     for part in parts_:
-        move(part)
+        if part != new_chain1[0].root:
+            move(part)
     # Prune
     def prune(t: ParentedTree) -> None:
         if t in dtrs1 or is_leaf(t[0]):
