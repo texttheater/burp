@@ -35,8 +35,12 @@ def children(s: Subtree) -> Iterable[Subtree]:
     return iter(())
 
 
-def is_leaf(t: Subtree) -> bool:
-    return isinstance(t, int)
+def is_preleaf(t: ParentedTree) -> bool:
+    assert len(t) > 0
+    if any(isinstance(c, int) for c in t):
+        assert len(t) == 1
+        return True
+    return False
 
 
 def argmin(xs: Iterable[Any], f: Callable[[Any], float]) -> Tuple[Any, float]:
@@ -56,15 +60,13 @@ def chains(tree2: ParentedTree) -> Iterable[Tuple[ParentedTree, ...]]:
     A unary chain is a sequence of all nodes with the same span, ordered from
     highest to lowest.
     """
-    if any(is_leaf(c) for c in tree2):
-        assert len(tree2) == 1
-    else:
+    if not is_preleaf(tree2):
         for child in tree2:
             yield from chains(child)
     if tree2.parent != None and len(tree2.parent) == 1:
         return
     chain = [tree2]
-    while len(tree2) == 1 and not is_leaf(tree2[0]):
+    while len(tree2) == 1 and not is_preleaf(tree2):
         chain.append(tree2[0])
         tree2 = tree2[0]
     yield tuple(chain)
@@ -176,8 +178,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 t.detach()
             bottom1.append(t)
             return
-        for d in t:
-            if isinstance(d, ParentedTree):
+        if not is_preleaf(t):
+            for d in t:
                 move(d)
     for n in xchain1[:-2]:
         for d in n:
@@ -217,7 +219,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             move(part)
     # Prune
     def prune(t: ParentedTree) -> None:
-        if t in dtrs1 or is_leaf(t[0]):
+        if t in dtrs1 or is_preleaf(t):
             return
         for d in t:
             prune(d)
