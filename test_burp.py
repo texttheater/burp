@@ -39,6 +39,11 @@ class BurpTestCase(unittest.TestCase):
                 '(B (D (E (F 0) (G 1) (I 2) (J 3))))',
                 5.0,
             ),
+            (
+                '(A (B (C (F 0) (G 1) (H (I 2))) (J (K 3) (L 4))))',
+                '(B (D (E (F 0) (G 1) (I 2) (K 3) (L 4))))',
+                6.0,
+            ),
         )
         for tree1, tree2, distance in cases:
             tree1 = ParentedTree(tree1)

@@ -43,6 +43,12 @@ def is_preleaf(t: ParentedTree) -> bool:
     return False
 
 
+def dominates(t: Subtree, s: Subtree) -> bool:
+    if isinstance(t, ParentedTree):
+        return t == s or any(dominates(c, s) for c in t)
+    return t == s
+
+
 def argmin(xs: Iterable[Any], f: Callable[[Any], float]) -> Tuple[Any, float]:
     record = float('Inf')
     record_holder = None
@@ -148,7 +154,7 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     def prune_cost(t: Subtree) -> float:
         if t in dtrs1:
             return 0.0
-        if span(t) <= target_span and span(t) != span(xchain1[0]):
+        if span(t) <= target_span and not dominates(t, xchain1[-1]):
             return 1.0 + sum(prune_cost(d) for d in children(t))
         return sum(prune_cost(d) for d in children(t))
     cost += sum(prune_cost(p) for p in parts)
