@@ -256,6 +256,19 @@ def burp(tree1: ParentedTree, tree2: ParentedTree) -> float:
     return cost
 
 
+def pp_chain(chain: Tuple[Subtree, ...]) -> str:
+    return ' '.join(
+        s.label if isinstance(s, ParentedTree) else str(s)
+        for s in chain
+    )
+
+
+def pp_node(t: Subtree) -> str:
+    if isinstance(t, ParentedTree):
+        return t.label
+    return str(t)
+
+
 if __name__ == '__main__':
     try:
         _, path1, path2 = sys.argv
