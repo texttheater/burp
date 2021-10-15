@@ -145,7 +145,7 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
         if (not span(xchain1[0]) <= span(part)) and span(part) <= target_span:
             cost += move_cost(part)
     # Cost of pruning
-    def prune_cost(t: ParentedTree) -> float:
+    def prune_cost(t: Subtree) -> float:
         if t in dtrs1:
             return 0.0
         if span(t) <= target_span and t not in xchain1:
