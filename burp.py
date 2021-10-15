@@ -192,7 +192,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 parts.append(d.detach())
     # Edit chain
     new_chain1 = [ParentedTree(chain2[-1].label, [])]
-    for n in chain2[-1:-1]:
+    for n in chain2[-2::-1]:
         new_chain1.insert(0, ParentedTree(n.label, [new_chain1[0]]))
     for d in tuple(bottom1):
         bottom1.remove(d)
