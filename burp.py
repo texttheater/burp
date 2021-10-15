@@ -148,7 +148,7 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     def prune_cost(t: Subtree) -> float:
         if t in dtrs1:
             return 0.0
-        if span(t) <= target_span and t not in xchain1:
+        if span(t) <= target_span and span(t) != span(xchain1[0]):
             return 1.0 + sum(prune_cost(d) for d in children(t))
         return sum(prune_cost(d) for d in children(t))
     cost += sum(prune_cost(p) for p in parts)
