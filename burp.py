@@ -227,6 +227,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             t.prune()
     for d in bottom1:
         prune(d)
+    # Sort children
+    bottom1.children.sort(key=lambda c: min(span(c)))
     # Assertions
     assert new_chain1[0] == chain2[0]
     # Record
