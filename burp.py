@@ -147,9 +147,17 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
         if not span(t) <= target_span:
             cost += 1.0
     # Cost of moving in
+    def move_in_cost(t: ParentedTree) -> float:
+        if t == xchain1[0]:
+            return 0.0
+        if span(t) <= target_span and not dominates(t, xchain1[0]):
+            return 1.0
+        if is_preleaf(t):
+            return 0.0
+        return sum(move_in_cost(c) for c in t)
     for part in parts:
-        if (not span(xchain1[0]) <= span(part)) and span(part) <= target_span:
-            cost += move_cost(part)
+        if not span(part) <= target_span: # already freed
+            cost += move_in_cost(part)
     # Cost of pruning
     def prune_cost(t: Subtree) -> float:
         if t in dtrs1:
@@ -219,10 +227,22 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         if not span(t) <= target_span:
             parts.append(t.detach())
     # Move in 
-    parts_ = tuple(parts)
-    for part in parts_:
-        if part != new_chain1[0].root:
-            move(part)
+    def move_in(t: ParentedTree) -> None:
+        if t == new_chain1[0]:
+            return
+        if span(t) <= target_span and not dominates(t, new_chain1[0]):
+            if t.parent is None:
+                parts.remove(t)
+            else:
+                t.detach()
+            bottom1.append(t)
+            return
+        if is_preleaf(t):
+            return
+        for c in t:
+            move_in(c)
+    for part in tuple(parts):
+        move_in(part)
     # Prune
     def prune(t: ParentedTree) -> None:
         if t in dtrs1 or is_preleaf(t):
