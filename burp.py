@@ -115,11 +115,6 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
         mapping[span(d)]
         for d in chain2[-1]
     )
-    # Find source chain bottom
-    if len(xchain1) > 1:
-        bottom1 = xchain1[-2]
-    else:
-        bottom1 = ()        
     # Cost of moving down
     def move_cost(t: ParentedTree) -> float:
         if span(t) <= target_span:
@@ -139,13 +134,15 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     labels2 = tuple(t.label for t in chain2)
     cost += levenshtein.levenshtein(labels1, labels2)
     # Cost of moving up
-    for t in bottom1:
-        if not span(t) <= target_span:
-            cost += move_cost(t)
+    if len(xchain1) > 1:
+        for t in xchain1[-2]:
+            if not span(t) <= target_span:
+                cost += move_cost(t)
     # Cost of freeing below
-    for t in bottom1:
-        if not span(t) <= target_span:
-            cost += 1.0
+    if len(xchain1) > 1:
+        for t in xchain1[-2]:
+            if not span(t) <= target_span:
+                cost += 1.0
     # Cost of moving in
     def move_in_cost(t: ParentedTree) -> float:
         if t == xchain1[0]:
@@ -178,11 +175,6 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         mapping[span(d)]
         for d in chain2[-1]
     )
-    # Find source chain bottom
-    if len(xchain1) > 1:
-        bottom1 = xchain1[-2]
-    else:
-        bottom1 = ()        
     # Move down
     def move(t: ParentedTree) -> None:
         if span(t) <= target_span:
@@ -190,7 +182,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 parts.remove(t)
             else:
                 t.detach()
-            bottom1.append(t)
+            xchain1[-2].append(t)
             return
         if not is_preleaf(t):
             for d in t:
@@ -204,26 +196,32 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         for d in t:
             if not span(d) <= target_span:
                 parts.append(d.detach())
-    # Edit chain
+    # Create new chain
     new_chain1 = [ParentedTree(chain2[-1].label, [])]
     for n in chain2[-2::-1]:
         new_chain1.insert(0, ParentedTree(n.label, [new_chain1[0]]))
-    for d in tuple(bottom1):
-        bottom1.remove(d)
-        new_chain1[-1].append(d)
+    # Replace old with new chain
     if xchain1[0].parent is None:
-        parts.remove(xchain1[0])
         parts.append(new_chain1[0])
+        parts.remove(xchain1[0])
     else:
         xchain1[0].parent.append(new_chain1[0])
-        xchain1[0].detach()
-    bottom1 = new_chain1[-1]
+        xchain1[0].parent.remove(xchain1[0])
+    # Move daughters to new chain
+    if len(xchain1) > 1:
+        for d in tuple(xchain1[-2]):
+            xchain1[-2].remove(d)
+            new_chain1[-1].append(d)
+    else:
+        new_chain1[-1].append(xchain1[-1])
+    # Update xchain1
+    xchain1 = tuple(new_chain1) + xchain1[-1:]
     # Move up
-    for t in bottom1:
+    for t in xchain1[-2]:
         if not span(t) <= target_span:
             move(t)
     # Free below
-    for t in bottom1:
+    for t in xchain1[-2]:
         if not span(t) <= target_span:
             parts.append(t.detach())
     # Move in 
@@ -235,7 +233,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 parts.remove(t)
             else:
                 t.detach()
-            bottom1.append(t)
+            xchain1[-2].append(t)
             return
         if is_preleaf(t):
             return
@@ -251,10 +249,10 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             prune(d)
         if span(t) <= target_span:
             t.prune()
-    for d in bottom1:
+    for d in xchain1[-2]:
         prune(d)
     # Sort children
-    bottom1.children.sort(key=lambda c: min(span(c)))
+    xchain1[-2].children.sort(key=lambda c: min(span(c)))
     chain2[-1].children.sort(key=lambda c: min(span(c)))
     # Assertions
     assert new_chain1[0] == chain2[0]
