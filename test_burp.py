@@ -98,6 +98,11 @@ class BurpTestCase(unittest.TestCase):
                 '(A (J (K 0) (L 1)))',
                 1.0,
             ),
+            (
+                '(A (D (B (C 0)) (E 1)))',
+                '(A (B (C 0)) (D (E 1)))',
+                1.0,
+            ),
         )
         for tree1, tree2, distance in cases:
             tree1, _ = brackettree(tree1)
