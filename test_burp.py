@@ -2,7 +2,7 @@ import burp
 import unittest
 
 
-from discodop.tree import ParentedTree
+from discodop.tree import brackettree
 
 
 class BurpTestCase(unittest.TestCase):
@@ -100,6 +100,6 @@ class BurpTestCase(unittest.TestCase):
             ),
         )
         for tree1, tree2, distance in cases:
-            tree1 = ParentedTree(tree1)
-            tree2 = ParentedTree(tree2)
+            tree1, _ = brackettree(tree1)
+            tree2, _ = brackettree(tree2)
             self.assertEqual(burp.burp(tree1, tree2), distance)
