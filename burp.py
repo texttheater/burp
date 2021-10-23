@@ -54,7 +54,7 @@ def argmin(xs: Iterable[Any], f: Callable[[Any], float]) -> Tuple[Any, float]:
     record_holder = None
     for x in xs:
         value = f(x)
-        if value < record:
+        if value <= record:
             record = value
             record_holder = x
     return record_holder, record
@@ -83,6 +83,7 @@ def xchains(chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping
     
     An extended chain is some path in the original tree that ends with a node
     n such that chain2[-1] has a daughter d with mapping[span(d)] == n."""
+    # FIXME it might be better to prefer longer chains
     span2 = span(chain2[-1])
     for dtr2 in chain2[-1]:
         dtr2_span = span(dtr2)
