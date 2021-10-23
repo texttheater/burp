@@ -54,7 +54,7 @@ def argmin(xs: Iterable[Any], f: Callable[[Any], float]) -> Tuple[Any, float]:
     record_holder = None
     for x in xs:
         value = f(x)
-        if value < record:
+        if value <= record:
             record = value
             record_holder = x
     return record_holder, record
