@@ -5,7 +5,8 @@ import levenshtein
 import sys
 
 
-from discodop.tree import ParentedTree
+from discodop.punctuation import applypunct
+from discodop.tree import DrawTree, ParentedTree
 from discodop.treebank import DiscBracketCorpusReader
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Tuple, Union
 
@@ -309,6 +310,12 @@ if __name__ == '__main__':
         key2, item2 = t2
         assert key1 == key2
         tree1 = item1.tree
+        sent1 = item1.sent
         tree2 = item2.tree
+        sent2 = item2.sent
+        applypunct('remove', tree1, sent1)
+        applypunct('remove', tree2, sent2)
+        print(DrawTree(tree1, item1.sent))
+        print(DrawTree(tree2, item2.sent))
         assert sorted(tree1.leaves()) == sorted(tree2.leaves())
         print(burp(tree1, tree2))
