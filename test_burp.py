@@ -100,9 +100,10 @@ class BurpTestCase(unittest.TestCase):
                 1.0,
             ),
         )
-        for tree1, tree2, distance in cases:
+        for tree1, tree2, want_distance in cases:
             print(tree1, file=sys.stderr)
             print(tree2, file=sys.stderr)
             tree1, _ = brackettree(tree1)
             tree2, _ = brackettree(tree2)
-            self.assertEqual(burp.burp(tree1, tree2), distance)
+            got_distance, _ = burp.burp(tree1, tree2)
+            self.assertEqual(got_distance, want_distance)

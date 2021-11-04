@@ -11,6 +11,8 @@ from discodop.treebank import DiscBracketCorpusReader
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Tuple, Union
 
 
+Action = str # for now
+Script = List[Action]
 Span = FrozenSet[int]
 Subtree = Union[ParentedTree, int]
 
@@ -169,7 +171,7 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     return cost
 
 
-def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping: Dict[Span, ParentedTree]) -> None:
+def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping: Dict[Span, ParentedTree], script: Script) -> None:
     # Find target span
     target_span = span(chain2[-1])
     # Find already-mapped daughters
@@ -180,6 +182,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     # Move down
     def move(t: ParentedTree) -> None:
         if span(t) <= target_span:
+            script.append(f'move {t.label} to {xchain1[-2].label}')
             if t.parent is None:
                 parts.remove(t)
             else:
@@ -199,6 +202,10 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             if not span(d) <= target_span:
                 parts.append(d.detach())
     # Create new chain
+    old_labels = tuple(n.label for n in chain2)
+    new_labels = tuple(n.label for n in xchain1[:-1])
+    if old_labels != new_labels:
+        script.append(f'edit chain {pp_chain(xchain1[:-1])} into {pp_chain(chain2)}')
     new_chain1 = [ParentedTree(chain2[-1].label, [])]
     for n in chain2[-2::-1]:
         new_chain1.insert(0, ParentedTree(n.label, [new_chain1[0]]))
@@ -231,6 +238,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         if t == new_chain1[0]:
             return
         if span(t) <= target_span and not dominates(t, new_chain1[0]):
+            script.append(f'move {t.label} to {xchain1[-2].label}')
             if t.parent is None:
                 parts.remove(t)
             else:
@@ -250,6 +258,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         for d in t:
             prune(d)
         if span(t) <= target_span:
+            script.append(f'delete {t.label}')
             t.prune()
     for d in xchain1[-2]:
         prune(d)
@@ -262,25 +271,26 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     mapping[target_span] = new_chain1[0]
 
 
-def burp(tree1: ParentedTree, tree2: ParentedTree) -> float:
+def burp(tree1: ParentedTree, tree2: ParentedTree) -> Tuple[float, Script]:
     span1 = span(tree1)
     span2 = span(tree2)
     assert span1 == span2
     cost = 0.0
     parts = [tree1]
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
+    script: Script = []
     for chain2 in chains(tree2):
         xchain1, new_cost = argmin(
             xchains(chain2, parts, mapping),
             lambda x: edit_cost(x, chain2, parts, mapping)
         )
         cost += new_cost
-        edit(xchain1, chain2, parts, mapping)
+        edit(xchain1, chain2, parts, mapping, script)
     # Assertions
     assert len(parts) == 1
     assert parts[0] == tree2
     # Return
-    return cost
+    return cost, script
 
 
 def pp_chain(chain: Tuple[Subtree, ...]) -> str:
