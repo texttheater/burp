@@ -99,25 +99,6 @@ class BurpTestCase(unittest.TestCase):
                 '(A (J (K 0) (L 1)))',
                 1.0,
             ),
-            # Move ADVP-PERI under CORE_N, delete NUC
-            # TODO With punctuation under CORE/SENTENCE, cost should go up to
-            # 3.0 but goes up to 7.0??
-            (
-                '(SENTENCE (CLAUSE (CORE (NUC (ADVP-PERI (CORE_ADV (NUC_ADV (ADV 0=Only)))) (NP (CORE_N (NUC_N (N-PROP 3=Police) (N-PROP 2=Thought))) (OP-DEF 1=the))) (NUC (V 4=mattered)))))',
-                '(SENTENCE (CLAUSE (CORE (NP (CORE_N (ADVP-PERI (CORE_ADV (NUC_ADV (ADV 0=Only)))) (NUC_N (N-PROP 2=Thought) (N-PROP 3=Police))) (OP-DEF 1=the)) (NUC (V 4=mattered)))))',
-                2.0,
-            ),
-            # Delete NPIP node, move "you" NP under CORE
-            (
-                '(SENTENCE (CLAUSE (PrCS (NP (PRO 0))) (CORE (NUC (V 1)) (NP (NPIP (NP (PRO 2))) (PRO 3)))))',
-                '(SENTENCE (CLAUSE (PrCS (NP (PRO 0))) (CORE (NUC (V 1)) (NP (PRO 2)) (NP (PRO 3)))))',
-                2.0,
-            ),
-            (
-                '(A (D (B (C 0)) (E 1)))',
-                '(A (B (C 0)) (D (E 1)))',
-                1.0,
-            ),
         )
         for tree1, tree2, distance in cases:
             print(tree1, file=sys.stderr)
