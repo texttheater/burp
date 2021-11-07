@@ -2,6 +2,7 @@
 
 
 import levenshtein
+import logging
 import os
 import sys
 
@@ -185,7 +186,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     def move(t: ParentedTree) -> None:
         if span(t) <= target_span:
             script.append(f'move {t.label} to {xchain1[-2].label}')
-            print(script[-1], file=sys.stderr)
+            logging.debug(script[-1])
             if t.parent is None:
                 parts.remove(t)
             else:
@@ -213,6 +214,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     i = 0
     for op in lev_script:
         if op == levenshtein.Op.DEL:
+            script.append(f'delete {chain[i].label}')
+            logging.debug(script[-1])
             if chain[i].parent is None:
                 parts.remove(chain[i])
                 parts.append(chain[i + 1].detach())
@@ -220,7 +223,10 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 chain[i].prune()
             del chain[i]
             show_parts(parts)
+            logging.debug('Chain: %s', pp_chain(chain))
         elif op == levenshtein.Op.INS:
+            script.append(f'insert {labels2[i]}')
+            logging.debug(script[-1])
             if chain[i].parent is None:
                 parts.remove(chain[i])
                 node = ParentedTree(labels2[i], [chain[i]])
@@ -231,10 +237,14 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 chain[i:i] = chain[i].parent
             i += 1
             show_parts(parts)
+            logging.debug('Chain: %s', pp_chain(chain))
         elif op == levenshtein.Op.SUB:
+            script.append(f'relabel {chain[i].label} to {labels2[i]}')
+            logging.debug(script[-1])
             chain[i].label = labels2[i]
             i += 1
             show_parts(parts)
+            logging.debug('Chain: %s', pp_chain(chain))
         else:
             i += 1
     assert i == len(chain) - 1
@@ -253,7 +263,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             return
         if span(t) <= target_span and not dominates(t, xchain1[0]):
             script.append(f'move {t.label} to {xchain1[-2].label}')
-            print(script[-1], file=sys.stderr)
+            logging.debug(script[-1])
             if t.parent is None:
                 parts.remove(t)
             else:
@@ -275,7 +285,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             prune(d)
         if span(t) <= target_span:
             script.append(f'delete {t.label}')
-            print(script[-1], file=sys.stderr)
+            logging.debug(script[-1])
             t.prune()
             show_parts(parts)
     for d in xchain1[-2]:
@@ -299,11 +309,13 @@ def burp(tree1: ParentedTree, tree2: ParentedTree) -> Tuple[float, Script]:
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
     script: Script = []
     for chain2 in chains(tree2):
+        logging.debug('chain2 : %s', pp_chain(chain2))
         xchain1, new_cost = argmin(
             xchains(chain2, parts, mapping),
             lambda x: edit_cost(x, chain2, parts, mapping)
         )
         cost += new_cost
+        logging.debug('xchain1: %s', pp_chain(xchain1))
         edit(xchain1, chain2, parts, mapping, script)
     # Assertions
     assert len(parts) == 1
@@ -312,7 +324,7 @@ def burp(tree1: ParentedTree, tree2: ParentedTree) -> Tuple[float, Script]:
     return cost, script
 
 
-def pp_chain(chain: Tuple[Subtree, ...]) -> str:
+def pp_chain(chain: Sequence[Subtree]) -> str:
     return ' '.join(
         s.label if isinstance(s, ParentedTree) else str(s)
         for s in chain
@@ -326,7 +338,7 @@ def pp_node(t: Subtree) -> str:
 
 
 def show_parts(parts: List[ParentedTree]) -> None:
-    print(side_by_side(tuple(str(DrawTree(p)) for p in parts)), file=sys.stderr)
+    logging.debug('Parts:\n%s', side_by_side(tuple(str(DrawTree(p)) for p in parts)))
 
 
 def side_by_side(blocks: Sequence[str]) -> str:

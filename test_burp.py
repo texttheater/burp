@@ -1,9 +1,13 @@
 import burp
+import logging
 import sys
 import unittest
 
 
 from discodop.tree import brackettree
+
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 class BurpTestCase(unittest.TestCase):
@@ -101,8 +105,8 @@ class BurpTestCase(unittest.TestCase):
             ),
         )
         for tree1, tree2, want_distance in cases:
-            print(tree1, file=sys.stderr)
-            print(tree2, file=sys.stderr)
+            logging.debug('Source: %s', tree1)
+            logging.debug('Target: %s', tree2)
             tree1, _ = brackettree(tree1)
             tree2, _ = brackettree(tree2)
             got_distance, _ = burp.burp(tree1, tree2)
