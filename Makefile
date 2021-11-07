@@ -3,7 +3,7 @@
 all : typecheck test run
 
 typecheck:
-	python3 -m mypy --ignore-missing-imports burp.py
+	python3 -m mypy --ignore-missing-imports burp.py levenshtein.py
 
 test :
 	python3 -m unittest

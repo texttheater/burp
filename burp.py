@@ -136,7 +136,7 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     # Cost of chain editing
     labels1 = tuple(t.label for t in xchain1[:-1])
     labels2 = tuple(t.label for t in chain2)
-    cost += levenshtein.levenshtein(labels1, labels2)
+    cost += levenshtein.distance(levenshtein.matrix(labels1, labels2))
     # Cost of moving up
     if len(xchain1) > 1:
         for t in xchain1[-2]:
@@ -183,11 +183,13 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     def move(t: ParentedTree) -> None:
         if span(t) <= target_span:
             script.append(f'move {t.label} to {xchain1[-2].label}')
+            print(script[-1], file=sys.stderr)
             if t.parent is None:
                 parts.remove(t)
             else:
                 t.detach()
             xchain1[-2].append(t)
+            show_parts(parts)
             return
         if not is_preleaf(t):
             for d in t:
@@ -201,30 +203,37 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         for d in t:
             if not span(d) <= target_span:
                 parts.append(d.detach())
-    # Create new chain
-    old_labels = tuple(n.label for n in chain2)
-    new_labels = tuple(n.label for n in xchain1[:-1])
-    if old_labels != new_labels:
-        script.append(f'edit chain {pp_chain(xchain1[:-1])} into {pp_chain(chain2)}')
-    new_chain1 = [ParentedTree(chain2[-1].label, [])]
-    for n in chain2[-2::-1]:
-        new_chain1.insert(0, ParentedTree(n.label, [new_chain1[0]]))
-    # Replace old with new chain
-    if xchain1[0].parent is None:
-        parts.append(new_chain1[0])
-        parts.remove(xchain1[0])
-    else:
-        xchain1[0].parent.append(new_chain1[0])
-        xchain1[0].parent.remove(xchain1[0])
-    # Move daughters to new chain
-    if len(xchain1) > 1:
-        for d in tuple(xchain1[-2]):
-            xchain1[-2].remove(d)
-            new_chain1[-1].append(d)
-    else:
-        new_chain1[-1].append(xchain1[-1])
-    # Update xchain1
-    xchain1 = tuple(new_chain1) + xchain1[-1:]
+    # Edit chain
+    labels1 = tuple(n.label for n in xchain1[:-1])
+    labels2 = tuple(n.label for n in chain2)
+    lev_script = levenshtein.script(levenshtein.matrix(labels1, labels2))
+    chain = list(xchain1)
+    i = 0
+    for op in lev_script:
+        if op == levenshtein.Op.DEL:
+            if chain[i].parent is None:
+                parts.remove(chain[i])
+                parts.append(chain[i + 1].detach())
+            else:
+                chain[i].prune()
+            del chain[i]
+        elif op == levenshtein.Op.INS:
+            if chain[i].parent is None:
+                parts.remove(chain[i])
+                node = ParentedTree(labels2[i], [chain[i]])
+                parts.append(node)
+                chain[i:] = node
+            else:
+                chain[i].spliceabove(labels2[i])
+                chain[i:i] = chain[i].parent
+            i += 1
+        elif op == levenshtein.Op.SUB:
+            chain[i].label = labels2[i]
+            i += 1
+        else:
+            i += 1
+    assert i == len(chain) - 1
+    xchain1 = tuple(chain)
     # Move up
     for t in xchain1[-2]:
         if not span(t) <= target_span:
@@ -235,15 +244,17 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             parts.append(t.detach())
     # Move in 
     def move_in(t: ParentedTree) -> None:
-        if t == new_chain1[0]:
+        if t == xchain1[0]:
             return
-        if span(t) <= target_span and not dominates(t, new_chain1[0]):
+        if span(t) <= target_span and not dominates(t, xchain1[0]):
             script.append(f'move {t.label} to {xchain1[-2].label}')
+            print(script[-1], file=sys.stderr)
             if t.parent is None:
                 parts.remove(t)
             else:
                 t.detach()
             xchain1[-2].append(t)
+            show_parts(parts)
             return
         if is_preleaf(t):
             return
@@ -259,16 +270,18 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             prune(d)
         if span(t) <= target_span:
             script.append(f'delete {t.label}')
+            print(script[-1], file=sys.stderr)
             t.prune()
+            show_parts(parts)
     for d in xchain1[-2]:
         prune(d)
     # Sort children
     xchain1[-2].children.sort(key=lambda c: min(span(c)))
     chain2[-1].children.sort(key=lambda c: min(span(c)))
     # Assertions
-    assert new_chain1[0] == chain2[0]
+    assert xchain1[0] == chain2[0]
     # Record
-    mapping[target_span] = new_chain1[0]
+    mapping[target_span] = xchain1[0]
 
 
 def burp(tree1: ParentedTree, tree2: ParentedTree) -> Tuple[float, Script]:
@@ -304,6 +317,21 @@ def pp_node(t: Subtree) -> str:
     if isinstance(t, ParentedTree):
         return t.label
     return str(t)
+
+
+def show_parts(parts: List[ParentedTree]) -> None:
+    print('==================================== PARTS ====================================', file=sys.stderr)
+    for part in parts:
+        # normalize leaf numbers (DrawTree will fail otherwise)
+        part = part.copy(deep=True)
+        part_span = sorted(span(part))
+        for subtree in part:
+            if isinstance(subtree, int):
+                continue
+            if is_preleaf(subtree):
+                subtree[0] = part_span.index(subtree[0])
+        # draw
+        print(DrawTree(part), file=sys.stderr)
 
 
 if __name__ == '__main__':
