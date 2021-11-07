@@ -2,13 +2,15 @@
 
 
 import levenshtein
+import os
 import sys
 
 
 from discodop.punctuation import applypunct
 from discodop.tree import DrawTree, ParentedTree
 from discodop.treebank import DiscBracketCorpusReader
-from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Tuple, Union
+from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Sequence, \
+        Tuple, Union
 
 
 Action = str # for now
@@ -217,6 +219,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             else:
                 chain[i].prune()
             del chain[i]
+            show_parts(parts)
         elif op == levenshtein.Op.INS:
             if chain[i].parent is None:
                 parts.remove(chain[i])
@@ -227,9 +230,11 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 chain[i].spliceabove(labels2[i])
                 chain[i:i] = chain[i].parent
             i += 1
+            show_parts(parts)
         elif op == levenshtein.Op.SUB:
             chain[i].label = labels2[i]
             i += 1
+            show_parts(parts)
         else:
             i += 1
     assert i == len(chain) - 1
@@ -290,6 +295,7 @@ def burp(tree1: ParentedTree, tree2: ParentedTree) -> Tuple[float, Script]:
     assert span1 == span2
     cost = 0.0
     parts = [tree1]
+    show_parts(parts)
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
     script: Script = []
     for chain2 in chains(tree2):
@@ -320,18 +326,19 @@ def pp_node(t: Subtree) -> str:
 
 
 def show_parts(parts: List[ParentedTree]) -> None:
-    print('==================================== PARTS ====================================', file=sys.stderr)
-    for part in parts:
-        # normalize leaf numbers (DrawTree will fail otherwise)
-        part = part.copy(deep=True)
-        part_span = sorted(span(part))
-        for subtree in part:
-            if isinstance(subtree, int):
-                continue
-            if is_preleaf(subtree):
-                subtree[0] = part_span.index(subtree[0])
-        # draw
-        print(DrawTree(part), file=sys.stderr)
+    print(side_by_side(tuple(str(DrawTree(p)) for p in parts)), file=sys.stderr)
+
+
+def side_by_side(blocks: Sequence[str]) -> str:
+    blks = tuple(b.splitlines() for b in blocks)
+    widths = tuple(len(b[0]) for b in blks) # TODO grapheme cluster support
+    heights = tuple(len(b) for b in blks)
+    max_height = max(heights)
+    # Pad blks at top
+    for block, width, height in zip(blks, widths, heights):
+        block[0:0] = [' ' * width] * (max_height - height)
+    # Join
+    return os.linesep.join(' '.join(p) for p in zip(*blks))
 
 
 if __name__ == '__main__':
