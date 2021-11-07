@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
 
 
+"""Computes BURP distance for two trees over the same sentence."""
+
+
+import argparse
 import levenshtein
 import logging
 import os
@@ -354,14 +358,16 @@ def side_by_side(blocks: Sequence[str]) -> str:
 
 
 if __name__ == '__main__':
-    try:
-        _, path1, path2 = sys.argv
-    except ValueError:
-        print('USAGE: python3 burp.py t1.discbracket t2.discbracket',
-                file=sys.stderr)
-        sys.exit(1)
-    inp1 = DiscBracketCorpusReader(path1)
-    inp2 = DiscBracketCorpusReader(path2)
+    arg_parser = argparse.ArgumentParser(description=__doc__)
+    arg_parser.add_argument('path1', help='source trees in .discbracket format')
+    arg_parser.add_argument('path2', help='target trees in .discbracket format')
+    arg_parser.add_argument('-d', '--debug', action='store_true',
+            help='display debug messages')
+    args = arg_parser.parse_args()
+    inp1 = DiscBracketCorpusReader(args.path1)
+    inp2 = DiscBracketCorpusReader(args.path2)
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
     for t1, t2 in zip(inp1.itertrees(), inp2.itertrees()):
         key1, item1 = t1
         key2, item2 = t2

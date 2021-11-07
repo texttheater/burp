@@ -9,4 +9,4 @@ test :
 	python3 -m unittest
 
 run :
-	python3 -m burp example_predicted.bracket example_gold.bracket
+	python3 -m burp -d example_predicted.bracket example_gold.bracket
