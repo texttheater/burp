@@ -298,6 +298,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     xchain1[-2].children.sort(key=lambda c: min(span(c)))
     chain2[-1].children.sort(key=lambda c: min(span(c)))
     # Assertions
+    logging.debug('Source subtree:\n%s', pp_tree(xchain1[0]))
+    logging.debug('Target subtree:\n%s', pp_tree(chain2[0]))
     assert xchain1[0] == chain2[0]
     # Record
     mapping[target_span] = xchain1[0]
@@ -341,12 +343,23 @@ def pp_node(t: Subtree) -> str:
     return str(t)
 
 
+def pp_tree(t: ParentedTree) -> str:
+    t = t.copy(deep=True)
+    t_span = sorted(span(t))
+    for subtree in t.subtrees():
+        if isinstance(subtree, int):
+            continue
+        if is_preleaf(subtree):
+            subtree[:] = [t_span.index(subtree[0])]
+    return str(DrawTree(t))
+
+
 def show_parts(parts: List[ParentedTree]) -> None:
-    logging.debug('Parts:\n%s', side_by_side(tuple(str(DrawTree(p)) for p in parts)))
+    logging.debug('Parts:\n%s', side_by_side(tuple(pp_tree(p) + ' ' for p in parts)))
 
 
 def side_by_side(blocks: Sequence[str]) -> str:
-    blks = tuple(b.splitlines() for b in blocks)
+    blks = tuple(fixed_splitlines(b) for b in blocks)
     widths = tuple(len(b[0]) for b in blks) # TODO grapheme cluster support
     heights = tuple(len(b) for b in blks)
     max_height = max(heights)
@@ -355,6 +368,14 @@ def side_by_side(blocks: Sequence[str]) -> str:
         block[0:0] = [' ' * width] * (max_height - height)
     # Join
     return os.linesep.join(' '.join(p) for p in zip(*blks))
+
+
+def fixed_splitlines(string: str) -> List[str]:
+    """Like str.splitlines, but preserves empty last line."""
+    result = string.splitlines()
+    if string.endswith(os.linesep):
+        result.append('')
+    return result
 
 
 if __name__ == '__main__':
