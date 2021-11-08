@@ -207,7 +207,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     # Free above
     for t in xchain1[:-2]:
         for d in t:
-            if not span(d) <= target_span:
+            if not d in xchain1:
                 parts.append(d.detach())
     # Edit chain
     labels1 = tuple(n.label for n in xchain1[:-1])
