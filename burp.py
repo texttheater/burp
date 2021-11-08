@@ -235,10 +235,11 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 parts.remove(chain[i])
                 node = ParentedTree(labels2[i], [chain[i]])
                 parts.append(node)
-                chain[i:i] = [node]
+            elif i == 0:
+                chain[i].spliceabove(labels2[i])
             else:
                 chain[i].parent.splicebelow(labels2[i])
-                chain[i:i] = [chain[i].parent]
+            chain[i:i] = [chain[i].parent]
             i += 1
             show_parts(parts)
             logging.debug('Chain: %s', pp_chain(chain))
