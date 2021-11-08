@@ -138,7 +138,7 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     # Cost of freeing above
     for t in xchain1[:-2]:
         for d in t:
-            if not span(d) <= target_span:
+            if d not in xchain1 and not span(d) <= target_span:
                 cost += 1.0
     # Cost of chain editing
     labels1 = tuple(t.label for t in xchain1[:-1])
