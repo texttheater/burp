@@ -105,9 +105,9 @@ class BurpTestCase(unittest.TestCase):
             ),
         )
         for tree1, tree2, want_distance in cases:
-            logging.debug('Source: %s', tree1)
-            logging.debug('Target: %s', tree2)
             tree1, _ = brackettree(tree1)
             tree2, _ = brackettree(tree2)
+            logging.debug('Source:\n%s', burp.pp_tree(tree1))
+            logging.debug('Target:\n%s', burp.pp_tree(tree2))
             got_distance, _ = burp.burp(tree1, tree2)
             self.assertEqual(got_distance, want_distance)
