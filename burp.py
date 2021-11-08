@@ -178,7 +178,7 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     return cost
 
 
-def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping: Dict[Span, ParentedTree], script: Script) -> None:
+def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping: Dict[Span, ParentedTree], script: Script, sent: List[str]) -> None:
     # Find target span
     target_span = span(chain2[-1])
     # Find already-mapped daughters
@@ -196,7 +196,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             else:
                 t.detach()
             xchain1[-2].append(t)
-            show_parts(parts)
+            show_parts(parts, sent)
             return
         if not is_preleaf(t):
             for d in t:
@@ -226,7 +226,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             else:
                 chain[i].prune()
             del chain[i]
-            show_parts(parts)
+            show_parts(parts, sent)
             logging.debug('Chain: %s', pp_chain(chain))
         elif op == levenshtein.Op.INS:
             script.append(f'insert {labels2[i]}')
@@ -241,14 +241,14 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
                 chain[i].parent.splicebelow(labels2[i])
             chain[i:i] = [chain[i].parent]
             i += 1
-            show_parts(parts)
+            show_parts(parts, sent)
             logging.debug('Chain: %s', pp_chain(chain))
         elif op == levenshtein.Op.SUB:
             script.append(f'relabel {chain[i].label} to {labels2[i]}')
             logging.debug(script[-1])
             chain[i].label = labels2[i]
             i += 1
-            show_parts(parts)
+            show_parts(parts, sent)
             logging.debug('Chain: %s', pp_chain(chain))
         else:
             i += 1
@@ -274,7 +274,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             else:
                 t.detach()
             xchain1[-2].append(t)
-            show_parts(parts)
+            show_parts(parts, sent)
             return
         if is_preleaf(t):
             return
@@ -292,27 +292,27 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             script.append(f'delete {t.label}')
             logging.debug(script[-1])
             t.prune()
-            show_parts(parts)
+            show_parts(parts, sent)
     for d in xchain1[-2]:
         prune(d)
     # Sort children
     xchain1[-2].children.sort(key=lambda c: min(span(c)))
     chain2[-1].children.sort(key=lambda c: min(span(c)))
     # Assertions
-    logging.debug('Source subtree:\n%s', pp_tree(xchain1[0]))
-    logging.debug('Target subtree:\n%s', pp_tree(chain2[0]))
+    logging.debug('Source subtree:\n%s', pp_tree(xchain1[0], sent))
+    logging.debug('Target subtree:\n%s', pp_tree(chain2[0], sent))
     assert xchain1[0] == chain2[0]
     # Record
     mapping[target_span] = xchain1[0]
 
 
-def burp(tree1: ParentedTree, tree2: ParentedTree) -> Tuple[float, Script]:
+def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[float, Script]:
     span1 = span(tree1)
     span2 = span(tree2)
     assert span1 == span2
     cost = 0.0
     parts = [tree1]
-    show_parts(parts)
+    show_parts(parts, sent)
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
     script: Script = []
     for chain2 in chains(tree2):
@@ -323,7 +323,7 @@ def burp(tree1: ParentedTree, tree2: ParentedTree) -> Tuple[float, Script]:
         )
         cost += new_cost
         logging.debug('xchain1: %s', pp_chain(xchain1))
-        edit(xchain1, chain2, parts, mapping, script)
+        edit(xchain1, chain2, parts, mapping, script, sent)
     # Assertions
     assert len(parts) == 1
     assert parts[0] == tree2
@@ -344,19 +344,12 @@ def pp_node(t: Subtree) -> str:
     return str(t)
 
 
-def pp_tree(t: ParentedTree) -> str:
-    t = t.copy(deep=True)
-    t_span = sorted(span(t))
-    for subtree in t.subtrees():
-        if isinstance(subtree, int):
-            continue
-        if is_preleaf(subtree):
-            subtree[:] = [t_span.index(subtree[0])]
-    return str(DrawTree(t))
+def pp_tree(t: ParentedTree, sent: List[str]) -> str:
+    return str(DrawTree(t, sent))
 
 
-def show_parts(parts: List[ParentedTree]) -> None:
-    logging.debug('Parts:\n%s', side_by_side(tuple(pp_tree(p) + ' ' for p in parts)))
+def show_parts(parts: List[ParentedTree], sent: List[str]) -> None:
+    logging.debug('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) + ' ' for p in parts)))
 
 
 def side_by_side(blocks: Sequence[str]) -> str:
@@ -400,7 +393,7 @@ if __name__ == '__main__':
         sent2 = item2.sent
         applypunct('remove', tree1, sent1)
         applypunct('remove', tree2, sent2)
-        print(DrawTree(tree1, item1.sent))
-        print(DrawTree(tree2, item2.sent))
-        assert sorted(tree1.leaves()) == sorted(tree2.leaves())
-        print(burp(tree1, tree2))
+        assert sent1 == sent2
+        print(DrawTree(tree1, sent1))
+        print(DrawTree(tree2, sent2))
+        print(burp(tree1, tree2, sent1))
