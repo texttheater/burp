@@ -229,15 +229,17 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         elif op == levenshtein.Op.INS:
             script.append(f'insert {labels2[i]}')
             logging.debug(script[-1])
-            if chain[i].parent is None:
-                parts.remove(chain[i])
-                node = ParentedTree(labels2[i], [chain[i]])
-                parts.append(node)
-            elif i == 0:
-                chain[i].spliceabove(labels2[i])
+            if i == 0:
+                if chain[i].parent is None:
+                    parts.remove(chain[i])
+                    node = ParentedTree(labels2[i], [chain[i]])
+                    parts.append(node)
+                else:
+                    chain[i].spliceabove(labels2[i])
+                chain[i:i] = [chain[i].parent]
             else:
-                chain[i].parent.splicebelow(labels2[i])
-            chain[i:i] = [chain[i].parent]
+                chain[i - 1].splicebelow(labels2[i])
+                chain[i:i] = [chain[i - 1][0]]
             i += 1
             logging.debug('Chain: %s', pp_chain(chain))
         elif op == levenshtein.Op.SUB:
