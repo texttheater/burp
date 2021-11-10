@@ -308,8 +308,8 @@ def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[flo
     assert span1 == span2
     cost = 0.0
     parts = [tree1]
-    logging.debug('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts)))
-    logging.debug('Target:\n%s', pp_tree(tree2, sent))
+    logging.info('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts)))
+    logging.info('Target:\n%s', pp_tree(tree2, sent))
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
     script: Script = []
     for chain2 in chains(tree2):
@@ -371,12 +371,14 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('path1', help='source trees in .discbracket format')
     arg_parser.add_argument('path2', help='target trees in .discbracket format')
-    arg_parser.add_argument('-d', '--debug', action='store_true',
-            help='display debug messages')
+    arg_parser.add_argument('-v', '--verbose', action='count',
+            help='Verbosity. Give once for printing trees, twice for debugging.')
     args = arg_parser.parse_args()
     inp1 = DiscBracketCorpusReader(args.path1)
     inp2 = DiscBracketCorpusReader(args.path2)
-    if args.debug:
+    if args.verbose == 1:
+        logging.basicConfig(level=logging.INFO)
+    elif args.verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
     for t1, t2 in zip(inp1.itertrees(), inp2.itertrees()):
         key1, item1 = t1
