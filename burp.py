@@ -331,6 +331,8 @@ def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[flo
 
 
 def pp_chain(chain: Sequence[Subtree]) -> str:
+    """Pretty-print a chain
+    """
     return ' '.join(
         s.label if isinstance(s, ParentedTree) else str(s)
         for s in chain
@@ -338,6 +340,8 @@ def pp_chain(chain: Sequence[Subtree]) -> str:
 
 
 def pp_tree(t: ParentedTree, sent: List[str]) -> str:
+    """Pretty-print a tree
+    """
     return str(DrawTree(t, sent))
 
 
