@@ -337,12 +337,6 @@ def pp_chain(chain: Sequence[Subtree]) -> str:
     )
 
 
-def pp_node(t: Subtree) -> str:
-    if isinstance(t, ParentedTree):
-        return t.label
-    return str(t)
-
-
 def pp_tree(t: ParentedTree, sent: List[str]) -> str:
     return str(DrawTree(t, sent))
 
