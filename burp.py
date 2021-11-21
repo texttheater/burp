@@ -369,7 +369,7 @@ if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('path1', help='source trees in .discbracket format')
     arg_parser.add_argument('path2', help='target trees in .discbracket format')
-    arg_parser.add_argument('-v', '--verbose', action='count',
+    arg_parser.add_argument('-v', '--verbose', action='count', default=0,
             help='Verbosity. Give once for printing trees, twice for debugging.')
     args = arg_parser.parse_args()
     inp1 = DiscBracketCorpusReader(args.path1)
