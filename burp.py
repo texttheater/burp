@@ -321,7 +321,7 @@ def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[flo
         cost += new_cost
         logging.debug('xchain1: %s', pp_chain(xchain1))
         edit(xchain1, chain2, parts, mapping, script, sent)
-        logging.debug('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts)))
+        logging.debug('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts), 4))
         logging.debug('Target:\n%s', pp_tree(tree2, sent))
     # Assertions
     assert len(parts) == 1
@@ -345,8 +345,8 @@ def pp_tree(t: ParentedTree, sent: List[str]) -> str:
     return str(DrawTree(t, sent))
 
 
-def side_by_side(blocks: Sequence[str]) -> str:
-    blks = tuple(fixed_splitlines(b) for b in blocks)
+def side_by_side(blocks: Sequence[str], padding: int=0) -> str:
+    blks = tuple(pad(fixed_splitlines(b), padding) for b in blocks)
     widths = tuple(len(b[0]) for b in blks) # TODO grapheme cluster support
     heights = tuple(len(b) for b in blks)
     max_height = max(heights)
@@ -363,6 +363,14 @@ def fixed_splitlines(string: str) -> List[str]:
     if string.endswith(os.linesep):
         result.append('')
     return result
+
+
+def pad(block: Sequence[str], margin: int=0) -> List[str]:
+    width = max(len(l) for l in block) + margin
+    return [
+        line + ' ' * (width - len(line))
+        for line in block
+    ] # TODO grapheme cluster support
 
 
 if __name__ == '__main__':
