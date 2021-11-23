@@ -229,6 +229,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             script.append(f'insert {labels2[i]}')
             logging.debug(script[-1])
             if i == 0:
+                # This case is *not* supported by the RRGparbank annotation
+                # interface if chain[i] has siblings or is the root.
                 if chain[i].parent is None:
                     parts.remove(chain[i])
                     node = ParentedTree(labels2[i], [chain[i]])
