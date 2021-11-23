@@ -11,3 +11,8 @@ Dependencies
 ------------
 
 * [disco-dop](https://github.com/andreasvc/disco-dop)
+
+Usage example
+-------------
+
+    python3 burp.py example_nofunc_predicted.bracket example_nofunc_gold.bracket
