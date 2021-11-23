@@ -309,7 +309,7 @@ def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[flo
     assert span1 == span2
     cost = 0.0
     parts = [tree1]
-    logging.info('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts)))
+    logging.info('Source:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts)))
     logging.info('Target:\n%s', pp_tree(tree2, sent))
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
     script: Script = []
