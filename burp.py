@@ -178,6 +178,10 @@ def edit_cost(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...
     return cost
 
 
+def flab(label: str) -> str:
+    return '\\texttt{' + label.replace('_', '\\_') + '}'
+
+
 def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping: Dict[Span, ParentedTree], script: Script, sent: List[str]) -> None:
     # Find target span
     target_span = span(chain2[-1])
@@ -189,7 +193,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     # Move down
     def move(t: ParentedTree) -> None:
         if span(t) <= target_span:
-            script.append(f'move {t.label} to {xchain1[-2].label}')
+            script.append(f'move {flab(t.label)} to {flab(xchain1[-2].label)}')
             logging.debug(script[-1])
             if t.parent is None:
                 parts.remove(t)
@@ -217,7 +221,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     i = 0
     for op in lev_script:
         if op == levenshtein.Op.DEL:
-            script.append(f'delete {chain[i].label}')
+            script.append(f'delete {flab(chain[i].label)}')
             logging.debug(script[-1])
             if chain[i].parent is None:
                 parts.remove(chain[i])
@@ -227,7 +231,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             del chain[i]
             logging.debug('Chain: %s', pp_chain(chain))
         elif op == levenshtein.Op.INS:
-            script.append(f'insert {labels2[i]}')
+            script.append(f'insert {flab(labels2[i])}')
             logging.debug(script[-1])
             if i == 0:
                 if chain[i].parent is None:
@@ -243,7 +247,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             i += 1
             logging.debug('Chain: %s', pp_chain(chain))
         elif op == levenshtein.Op.SUB:
-            script.append(f'relabel {chain[i].label} to {labels2[i]}')
+            script.append(f'relabel {flab(chain[i].label)} to {flab(labels2[i])}')
             logging.debug(script[-1])
             chain[i].label = labels2[i]
             i += 1
@@ -265,7 +269,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         if t == xchain1[0]:
             return
         if span(t) <= target_span and not dominates(t, xchain1[0]):
-            script.append(f'move {t.label} to {xchain1[-2].label}')
+            script.append(f'move {flab(t.label)} to {flab(xchain1[-2].label)}')
             logging.debug(script[-1])
             if t.parent is None:
                 parts.remove(t)
@@ -286,7 +290,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
         for d in t:
             prune(d)
         if span(t) <= target_span:
-            script.append(f'delete {t.label}')
+            script.append(f'delete {flab(t.label)}')
             logging.debug(script[-1])
             t.prune()
     for d in xchain1[-2]:
@@ -308,8 +312,9 @@ def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[flo
     assert span1 == span2
     cost = 0.0
     parts = [tree1]
-    logging.info('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts)))
-    logging.info('Target:\n%s', pp_tree(tree2, sent))
+    logging.info('\n\\smaller\n\\begin{verbatim}\n%s\\end{verbatim}\n\n\\begin{verbatim}\n%s\\end{verbatim}\n\\larger\n', pp_tree(tree1, sent), pp_tree(tree2, sent))
+#    logging.info('Source:\n%s', pp_tree(tree1, sent))
+#    logging.info('Target:\n%s', pp_tree(tree2, sent))
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
     script: Script = []
     for chain2 in chains(tree2):
@@ -397,4 +402,5 @@ if __name__ == '__main__':
         applypunct('remove', tree1, sent1)
         applypunct('remove', tree2, sent2)
         assert sent1 == sent2
-        print(burp(tree1, tree2, sent1))
+        distance, script = burp(tree1, tree2, sent1)
+        print(f'\\noindent {distance} ({", ".join(script)})')
