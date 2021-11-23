@@ -9,4 +9,4 @@ test :
 	python3 -m unittest
 
 run :
-	python3 -m burp -vv example_nofunc_predicted.bracket example_nofunc_gold.bracket
+	python3 burp.py -vv example_nofunc_predicted.bracket example_nofunc_gold.bracket
