@@ -93,7 +93,6 @@ def xchains(chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping
     
     An extended chain is some path in the original tree that ends with a node
     n such that chain2[-1] has a daughter d with mapping[span(d)] == n."""
-    # FIXME it might be better to prefer longer chains
     span2 = span(chain2[-1])
     for dtr2 in chain2[-1]:
         dtr2_span = span(dtr2)
