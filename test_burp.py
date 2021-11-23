@@ -85,12 +85,13 @@ class BurpTestCase(unittest.TestCase):
             ),
             # The following two test cases demonstrate asymmetry: grouping two
             # siblings (that have other siblings) under a new node is harder
-            # (insert, move) than ungrouping them (delete).
-            #(
-            #    '(A (K 0) (L 1) (M 2))',
-            #    '(A (J (K 0) (L 1)) (M 2))',
-            #    2.0,
-            #),
+            # (insert, move) than ungrouping them (delete). In the first case,
+            # BURP currently doesn't find the optimal script.
+            (
+                '(A (K 0) (L 1) (M 2))',
+                '(A (J (K 0) (L 1)) (M 2))',
+                3.0, # should be 2.0
+            ),
             (
                 '(A (J (K 0) (L 1)) (M 2))',
                 '(A (K 0) (L 1) (M 2))',
@@ -103,6 +104,12 @@ class BurpTestCase(unittest.TestCase):
                 '(A (J (K 0) (L 1)))',
                 1.0,
             ),
+            # The example from Emms (2008)
+            (
+                '(A (L 1) (A (L 2) (A (L 3) (A (L 4) (L 5)))))',
+                '(A (L 1) (A (L 2) (A (L 3) (A (L 4)))) (L 5))',
+                1.0,
+            )
         )
         for tree1, tree2, want_distance in cases:
             tree1, sent1 = brackettree(tree1)

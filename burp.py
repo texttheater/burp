@@ -93,7 +93,6 @@ def xchains(chain2: Tuple[ParentedTree, ...], parts: List[ParentedTree], mapping
     
     An extended chain is some path in the original tree that ends with a node
     n such that chain2[-1] has a daughter d with mapping[span(d)] == n."""
-    # FIXME it might be better to prefer longer chains
     span2 = span(chain2[-1])
     for dtr2 in chain2[-1]:
         dtr2_span = span(dtr2)
@@ -230,6 +229,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             script.append(f'insert {labels2[i]}')
             logging.debug(script[-1])
             if i == 0:
+                # This case is *not* supported by the RRGparbank annotation
+                # interface if chain[i] has siblings or is the root.
                 if chain[i].parent is None:
                     parts.remove(chain[i])
                     node = ParentedTree(labels2[i], [chain[i]])
