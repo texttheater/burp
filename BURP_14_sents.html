@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- This file was created with the aha Ansi HTML Adapter. https://github.com/theZiz/aha -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="application/xml+xhtml; charset=UTF-8" />
+<title>stdin</title>
+</head>
+<body>
+<pre>
+Gold tree:
+                 SENTENCE                       
+                    │                            
+                  CLAUSE                        
+                    │                            
+                   CORE                         
+              ┌─────┴──────────────────────┐     
+             NUC                           │    
+   ┌──────────┴─────┐                      │     
+<span style="color:blue;font-weight:bold;">  ADVP  </span>            NP                     │    
+   │      ┌─────────┴───────┐              │     
+<span style="color:blue;font-weight:bold;">CORE_ADV</span>  │               CORE_N           │    
+   │      │                 │              │     
+<span style="color:blue;font-weight:bold;">NUC_ADV </span>  │               NUC_N         <span style="color:blue;font-weight:bold;">  NUC   </span>
+   │      │         ┌───────┴──────┐       │     
+<span style="color:blue;font-weight:bold;">  ADV   </span> <span style="color:blue;font-weight:bold;">OP </span>     <span style="color:blue;font-weight:bold;">   N    </span>        <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">   V    </span>
+   │      │         │              │       │     
+<span style="color:red;font-weight:bold;">  Only  </span> <span style="color:red;font-weight:bold;">the</span>     <span style="color:red;font-weight:bold;">Thought </span>        <span style="color:red;font-weight:bold;">Police</span> <span style="color:red;font-weight:bold;">mattered</span>
+
+UD2RRG tree:
+                 <span style="color:blue;font-weight:bold;">SENTENCE</span>                      
+                    │                           
+                 <span style="color:blue;font-weight:bold;"> CLAUSE </span>                      
+                    │                           
+                 <span style="color:blue;font-weight:bold;">  CORE  </span>                      
+              ┌─────┴─────────────────────┐     
+             NP                           │    
+          ┌───┴─────┐                     │     
+          │       CORE_N                  │    
+   ┌───── │ ────────┴───────┐             │     
+<span style="color:blue;font-weight:bold;">  ADVP  </span>  │                 │             │    
+   │      │                 │             │     
+<span style="color:blue;font-weight:bold;">CORE_ADV</span>  │                 │             │    
+   │      │                 │             │     
+<span style="color:blue;font-weight:bold;">NUC_ADV </span>  │               <span style="color:blue;font-weight:bold;">NUC_N</span>        <span style="color:blue;font-weight:bold;">  NUC   </span>
+   │      │         ┌───────┴─────┐       │     
+<span style="color:blue;font-weight:bold;">  ADV   </span> <span style="color:blue;font-weight:bold;">OP </span>     <span style="color:blue;font-weight:bold;">   N    </span>       <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">   V    </span>
+   │      │         │             │       │     
+<span style="color:red;font-weight:bold;">  Only  </span> <span style="color:red;font-weight:bold;">the</span>     <span style="color:red;font-weight:bold;">Thought </span>       <span style="color:red;font-weight:bold;">Police</span> <span style="color:red;font-weight:bold;">mattered</span>
+
+BURP:  (2.0, ['move ADVP to CORE_N', 'delete NUC'])
+Gold tree:
+                SENTENCE                               
+                   │                                    
+                 CLAUSE                                
+      ┌────────────┴─────────────┐                      
+      │                        CORE                    
+      │                   ┌──────┴─────┐                
+      │                   │           NUC              
+      │                   │      ┌─────┴────────┐       
+    CLAUSE                │   <span style="color:blue;font-weight:bold;">  NP   </span>     <span style="color:blue;font-weight:bold;">    ADVP     </span>
+      ┌─────┐             │      │              │       
+      │    <span style="color:blue;font-weight:bold;">CORE</span>           │   <span style="color:blue;font-weight:bold;">CORE_N </span>     <span style="color:blue;font-weight:bold;">  CORE_ADV   </span>
+ ┌─── │ ────┴──────┐      │      │              │       
+<span style="color:blue;font-weight:bold;">NP </span>   │         <span style="color:blue;font-weight:bold;">  NUC   </span> <span style="color:blue;font-weight:bold;">NUC </span> <span style="color:blue;font-weight:bold;"> NUC_N </span>     <span style="color:blue;font-weight:bold;">   NUC_ADV   </span>
+ │    │            │      │      │              │       
+<span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">  OP  </span>      <span style="color:blue;font-weight:bold;">   V    </span> <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">   N   </span>     <span style="color:blue;font-weight:bold;">     ADV     </span>
+ │    │            │      │      │              │       
+<span style="color:red;font-weight:bold;"> I </span> <span style="color:red;font-weight:bold;"> was  </span>      <span style="color:red;font-weight:bold;">working </span> <span style="color:red;font-weight:bold;">said</span> <span style="color:red;font-weight:bold;">Winston</span>     <span style="color:red;font-weight:bold;">indifferently</span>
+
+UD2RRG tree:
+                  <span style="color:blue;font-weight:bold;">SENTENCE</span>                           
+       ┌─────────────┴─────────────┐                  
+       │                        CLAUSE               
+       │                           │                  
+    SENTENCE                    <span style="color:blue;font-weight:bold;"> CORE  </span>              
+       │                    ┌──────┼──────────┐       
+    <span style="color:blue;font-weight:bold;"> CLAUSE </span>                │   <span style="color:blue;font-weight:bold;">  NP   </span> <span style="color:blue;font-weight:bold;">    ADVP     </span>
+       ┌──────┐             │      │          │       
+       │     <span style="color:blue;font-weight:bold;">CORE</span>           │   <span style="color:blue;font-weight:bold;">CORE_N </span> <span style="color:blue;font-weight:bold;">  CORE_ADV   </span>
+ ┌──── │ ─────┴──────┐      │      │          │       
+<span style="color:blue;font-weight:bold;">NP </span>    │          <span style="color:blue;font-weight:bold;">  NUC   </span> <span style="color:blue;font-weight:bold;">NUC </span> <span style="color:blue;font-weight:bold;"> NUC_N </span> <span style="color:blue;font-weight:bold;">   NUC_ADV   </span>
+ │     │             │      │      │          │       
+<span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">   OP   </span>      <span style="color:blue;font-weight:bold;">   V    </span> <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">   N   </span> <span style="color:blue;font-weight:bold;">     ADV     </span>
+ │     │             │      │      │          │       
+<span style="color:red;font-weight:bold;"> I </span> <span style="color:red;font-weight:bold;">  was   </span>      <span style="color:red;font-weight:bold;">working </span> <span style="color:red;font-weight:bold;">said</span> <span style="color:red;font-weight:bold;">Winston</span> <span style="color:red;font-weight:bold;">indifferently</span>
+
+BURP:  (3.0, ['insert SENTENCE', 'delete NUC', 'move SENTENCE to SENTENCE'])
+Gold tree:
+                      SENTENCE                             
+                         │                                  
+                       CLAUSE                              
+                         │                                  
+                        CORE                               
+     ┌───────────────────┴───────┐                          
+     │                         CORE                        
+     │                   ┌───────┼───────────┐              
+    <span style="color:blue;font-weight:bold;">CORE</span>                 │       │         <span style="color:blue;font-weight:bold;">  PP  </span>          
+ ┌───┴────┐              │       │           │              
+ │       <span style="color:blue;font-weight:bold;">NUC</span>             │       │         <span style="color:blue;font-weight:bold;">CORE_P</span>          
+ │   ┌────┴─────┐        │       │     ┌─────┴────────┐     
+ │   │       <span style="color:blue;font-weight:bold;">   AP   </span>    │       │     │          <span style="color:blue;font-weight:bold;">   NP    </span>
+ │   │          │        │       │     │              │     
+ │   │       <span style="color:blue;font-weight:bold;"> CORE_A </span>    │       │     │          <span style="color:blue;font-weight:bold;"> CORE_N  </span>
+ │   │          │        │       │     │              │     
+<span style="color:blue;font-weight:bold;">NP </span>  │       <span style="color:blue;font-weight:bold;"> NUC_A  </span>    │     <span style="color:blue;font-weight:bold;"> NUC </span> <span style="color:blue;font-weight:bold;">NUC_P</span>        <span style="color:blue;font-weight:bold;">  NUC_N  </span>
+ │   │          │        │       │     │              │     
+<span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">AUX </span>     <span style="color:blue;font-weight:bold;">   A    </span> <span style="color:blue;font-weight:bold;">  CLM   </span> <span style="color:blue;font-weight:bold;">  V  </span> <span style="color:blue;font-weight:bold;">  P  </span>        <span style="color:blue;font-weight:bold;">    N    </span>
+ │   │          │        │       │     │              │     
+<span style="color:red;font-weight:bold;">You</span> <span style="color:red;font-weight:bold;">were</span>     <span style="color:red;font-weight:bold;">supposed</span> <span style="color:red;font-weight:bold;">   to   </span> <span style="color:red;font-weight:bold;">stand</span> <span style="color:red;font-weight:bold;"> to  </span>        <span style="color:red;font-weight:bold;">attention</span>
+
+UD2RRG tree:
+                      <span style="color:blue;font-weight:bold;">SENTENCE</span>                             
+                         │                                  
+                      <span style="color:blue;font-weight:bold;"> CLAUSE </span>                             
+     ┌───────────────────┴───────┐                          
+     │                         <span style="color:blue;font-weight:bold;">CORE </span>                       
+     │                   ┌───────┼───────────┐              
+    <span style="color:blue;font-weight:bold;">CORE</span>                 │       │         <span style="color:blue;font-weight:bold;">  PP  </span>          
+ ┌───┴────┐              │       │           │              
+ │       <span style="color:blue;font-weight:bold;">NUC</span>             │       │         <span style="color:blue;font-weight:bold;">CORE_P</span>          
+ │   ┌────┴─────┐        │       │     ┌─────┴────────┐     
+ │   │       <span style="color:blue;font-weight:bold;">   AP   </span>    │       │     │          <span style="color:blue;font-weight:bold;">   NP    </span>
+ │   │          │        │       │     │              │     
+ │   │       <span style="color:blue;font-weight:bold;"> CORE_A </span>    │       │     │          <span style="color:blue;font-weight:bold;"> CORE_N  </span>
+ │   │          │        │       │     │              │     
+<span style="color:blue;font-weight:bold;">NP </span>  │       <span style="color:blue;font-weight:bold;"> NUC_A  </span>    │     <span style="color:blue;font-weight:bold;"> NUC </span> <span style="color:blue;font-weight:bold;">NUC_P</span>        <span style="color:blue;font-weight:bold;">  NUC_N  </span>
+ │   │          │        │       │     │              │     
+<span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">AUX </span>     <span style="color:blue;font-weight:bold;">   A    </span> <span style="color:blue;font-weight:bold;">  CLM   </span> <span style="color:blue;font-weight:bold;">  V  </span> <span style="color:blue;font-weight:bold;">  P  </span>        <span style="color:blue;font-weight:bold;">    N    </span>
+ │   │          │        │       │     │              │     
+<span style="color:red;font-weight:bold;">You</span> <span style="color:red;font-weight:bold;">were</span>     <span style="color:red;font-weight:bold;">supposed</span> <span style="color:red;font-weight:bold;">   to   </span> <span style="color:red;font-weight:bold;">stand</span> <span style="color:red;font-weight:bold;"> to  </span>        <span style="color:red;font-weight:bold;">attention</span>
+
+BURP:  (1.0, ['delete CORE'])
+Gold tree:
+    SENTENCE        
+       │             
+     CLAUSE         
+       │             
+      CORE          
+       │             
+      NUC           
+       │             
+       AP           
+ ┌─────┴────────┐    
+ │           <span style="color:blue;font-weight:bold;">CORE_A </span>
+ │              │    
+ │           <span style="color:blue;font-weight:bold;"> NUC_A </span>
+ │              │    
+<span style="color:blue;font-weight:bold;">CLM</span>          <span style="color:blue;font-weight:bold;">   A   </span>
+ │              │    
+<span style="color:red;font-weight:bold;">And</span>          <span style="color:red;font-weight:bold;">cheaper</span>
+
+UD2RRG tree:
+    <span style="color:blue;font-weight:bold;">SENTENCE</span>        
+       │             
+    <span style="color:blue;font-weight:bold;">   AP   </span>        
+ ┌─────┴────────┐    
+ │           <span style="color:blue;font-weight:bold;">CORE_A </span>
+ │              │    
+ │           <span style="color:blue;font-weight:bold;"> NUC_A </span>
+ │              │    
+<span style="color:blue;font-weight:bold;">CLM</span>          <span style="color:blue;font-weight:bold;">   A   </span>
+ │              │    
+<span style="color:red;font-weight:bold;">And</span>          <span style="color:red;font-weight:bold;">cheaper</span>
+
+BURP:  (3.0, ['delete CLAUSE', 'delete CORE', 'delete NUC'])
+Gold tree:
+            SENTENCE              
+               │                   
+             CLAUSE               
+ ┌─────────────┴──────┐            
+ │                   CORE         
+ │     ┌──────────────┴────┐       
+ │     │                  NP      
+ │     │              ┌────┴───┐   
+<span style="color:blue;font-weight:bold;">PrCS</span>   │             NPIP      │  
+ │     │              │        │   
+<span style="color:blue;font-weight:bold;"> NP </span> <span style="color:blue;font-weight:bold;"> NUC  </span>          <span style="color:blue;font-weight:bold;"> NP </span>      │  
+ │     │              │        │   
+<span style="color:blue;font-weight:bold;">PRO </span> <span style="color:blue;font-weight:bold;">  V   </span>          <span style="color:blue;font-weight:bold;">PRO </span>     <span style="color:blue;font-weight:bold;">PRO </span>
+ │     │              │        │   
+<span style="color:red;font-weight:bold;">Who </span> <span style="color:red;font-weight:bold;">taught</span>          <span style="color:red;font-weight:bold;">you </span>     <span style="color:red;font-weight:bold;">that</span>
+
+UD2RRG tree:
+            <span style="color:blue;font-weight:bold;">SENTENCE</span>          
+               │               
+            <span style="color:blue;font-weight:bold;"> CLAUSE </span>          
+ ┌─────────────┴──────┐        
+<span style="color:blue;font-weight:bold;">PrCS</span>                 <span style="color:blue;font-weight:bold;">CORE</span>     
+ │     ┌──────────────┼────┐   
+<span style="color:blue;font-weight:bold;"> NP </span> <span style="color:blue;font-weight:bold;"> NUC  </span>          <span style="color:blue;font-weight:bold;"> NP </span>  NP 
+ │     │              │    │   
+<span style="color:blue;font-weight:bold;">PRO </span> <span style="color:blue;font-weight:bold;">  V   </span>          <span style="color:blue;font-weight:bold;">PRO </span> <span style="color:blue;font-weight:bold;">PRO </span>
+ │     │              │    │   
+<span style="color:red;font-weight:bold;">Who </span> <span style="color:red;font-weight:bold;">taught</span>          <span style="color:red;font-weight:bold;">you </span> <span style="color:red;font-weight:bold;">that</span>
+
+BURP:  (2.0, ['move NPIP to CORE', 'delete NPIP'])
+Gold tree:
+          SENTENCE          
+             │               
+           CLAUSE           
+  ┌──────────┼──────┐        
+PrCS         │     CORE     
+  │    ┌──── │ ─────┼────┐   
+<span style="color:blue;font-weight:bold;">ADVP </span> <span style="color:blue;font-weight:bold;">NP </span>    │      │   <span style="color:blue;font-weight:bold;">NUC </span>
+  │    │     │      │    │   
+<span style="color:blue;font-weight:bold;"> PRO </span> <span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">   OP   </span> <span style="color:blue;font-weight:bold;"> OP </span> <span style="color:blue;font-weight:bold;"> V  </span>
+  │    │     │      │    │   
+<span style="color:red;font-weight:bold;">Where</span> <span style="color:red;font-weight:bold;"> I </span> <span style="color:red;font-weight:bold;">   do   </span> <span style="color:red;font-weight:bold;">not </span> <span style="color:red;font-weight:bold;">know</span>
+
+UD2RRG tree:
+          <span style="color:blue;font-weight:bold;">SENTENCE</span>                 
+  ┌──────────┴───────┐              
+  │                CLAUSE          
+  │          ┌───────┴─────┐        
+PrDP         │            <span style="color:blue;font-weight:bold;">CORE</span>     
+  │    ┌──── │ ────────────┼────┐   
+<span style="color:blue;font-weight:bold;">ADVP </span> <span style="color:blue;font-weight:bold;">NP </span>    │             │   <span style="color:blue;font-weight:bold;">NUC </span>
+  │    │     │             │    │   
+<span style="color:blue;font-weight:bold;"> PRO </span> <span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">   OP   </span>        <span style="color:blue;font-weight:bold;"> OP </span> <span style="color:blue;font-weight:bold;"> V  </span>
+  │    │     │             │    │   
+<span style="color:red;font-weight:bold;">Where</span> <span style="color:red;font-weight:bold;"> I </span> <span style="color:red;font-weight:bold;">   do   </span>        <span style="color:red;font-weight:bold;">not </span> <span style="color:red;font-weight:bold;">know</span>
+
+BURP:  (2.0, ['relabel PrCS to PrDP', 'move PrDP to SENTENCE'])
+Gold tree:
+                      SENTENCE                       
+                         │                            
+                       CLAUSE                        
+                         │                            
+                        CORE                         
+        ┌────────────────┴────────────┐               
+        NP                            │              
+ ┌──────┴────────┐                    │               
+ │             <span style="color:blue;font-weight:bold;">CORE_N</span>                NUC             
+ │      ┌────────┴───────┐      ┌─────┼─────────┐     
+ │  <span style="color:blue;font-weight:bold;">    AP    </span>           │      │  <span style="color:blue;font-weight:bold;">  ADVP  </span> <span style="color:blue;font-weight:bold;">   NP    </span>
+ │      │                │      │     │         │     
+ │  <span style="color:blue;font-weight:bold;">  CORE_A  </span>           │      │  <span style="color:blue;font-weight:bold;">CORE_ADV</span> <span style="color:blue;font-weight:bold;"> CORE_N  </span>
+ │      │                │      │     │         │     
+ │  <span style="color:blue;font-weight:bold;">  NUC_A   </span>        <span style="color:blue;font-weight:bold;"> NUC_N  </span>  │  <span style="color:blue;font-weight:bold;">NUC_ADV </span> <span style="color:blue;font-weight:bold;">  NUC_N  </span>
+ │      │                │      │     │         │     
+<span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">    A     </span>        <span style="color:blue;font-weight:bold;">   N    </span> <span style="color:blue;font-weight:bold;">AUX</span> <span style="color:blue;font-weight:bold;">  ADV   </span> <span style="color:blue;font-weight:bold;">    N    </span>
+ │      │                │      │     │         │     
+<span style="color:red;font-weight:bold;">The</span> <span style="color:red;font-weight:bold;">prevailing</span>        <span style="color:red;font-weight:bold;">emotion </span> <span style="color:red;font-weight:bold;">was</span> <span style="color:red;font-weight:bold;"> simply </span> <span style="color:red;font-weight:bold;">curiosity</span>
+
+UD2RRG tree:
+                      <span style="color:blue;font-weight:bold;">SENTENCE</span>                           
+                         │                                
+                      <span style="color:blue;font-weight:bold;"> CLAUSE </span>                           
+                         │                                
+                      <span style="color:blue;font-weight:bold;">  CORE  </span>                           
+        ┌────────────────┴────────────┬──────┐            
+    <span style="color:blue;font-weight:bold;">    NP    </span>                        │      │           
+ ┌──────┴────────┐                    │      │            
+ │             <span style="color:blue;font-weight:bold;">CORE_N</span>                 │     NUC          
+ │      ┌────────┴───────┐      ┌──── │ ─────┴──────┐     
+ │  <span style="color:blue;font-weight:bold;">    AP    </span>           │      │  <span style="color:blue;font-weight:bold;">  ADVP  </span>     <span style="color:blue;font-weight:bold;">   NP    </span>
+ │      │                │      │     │             │     
+ │  <span style="color:blue;font-weight:bold;">  CORE_A  </span>           │      │  <span style="color:blue;font-weight:bold;">CORE_ADV</span>     <span style="color:blue;font-weight:bold;"> CORE_N  </span>
+ │      │                │      │     │             │     
+ │  <span style="color:blue;font-weight:bold;">  NUC_A   </span>        <span style="color:blue;font-weight:bold;"> NUC_N  </span>  │  <span style="color:blue;font-weight:bold;">NUC_ADV </span>     <span style="color:blue;font-weight:bold;">  NUC_N  </span>
+ │      │                │      │     │             │     
+<span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">    A     </span>        <span style="color:blue;font-weight:bold;">   N    </span> <span style="color:blue;font-weight:bold;">AUX</span> <span style="color:blue;font-weight:bold;">  ADV   </span>     <span style="color:blue;font-weight:bold;">    N    </span>
+ │      │                │      │     │             │     
+<span style="color:red;font-weight:bold;">The</span> <span style="color:red;font-weight:bold;">prevailing</span>        <span style="color:red;font-weight:bold;">emotion </span> <span style="color:red;font-weight:bold;">was</span> <span style="color:red;font-weight:bold;"> simply </span>     <span style="color:red;font-weight:bold;">curiosity</span>
+
+BURP:  (1.0, ['move ADVP to CORE'])
+Gold tree:
+                    SENTENCE                        
+                       │                             
+                     CLAUSE                         
+                       │                             
+                      CORE                          
+     ┌─────────────────┼──────┐                      
+     │                 │     NUC                    
+     │          ┌───── │ ─────┴───┐                  
+     │          │      │         CORE               
+     │          │      │      ┌───┼────────┐         
+     │          │      │      │   │       <span style="color:blue;font-weight:bold;">NUC</span>       
+     │          │      │      │   │    ┌───┴────┐    
+    NP          │      │      │   │    │      <span style="color:blue;font-weight:bold;">  AP  </span>
+ ┌───┴────┐     │      │      │   │    │        │    
+ │      <span style="color:blue;font-weight:bold;">CORE_N</span>  │      │      │   │    │      <span style="color:blue;font-weight:bold;">CORE_A</span>
+ │        │     │      │      │   │    │        │    
+ │      <span style="color:blue;font-weight:bold;">NUC_N </span>  │   <span style="color:blue;font-weight:bold;">   NP   </span>  │   │    │      <span style="color:blue;font-weight:bold;">NUC_A </span>
+ │        │     │      │      │   │    │        │    
+<span style="color:blue;font-weight:bold;">OP </span>     <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">  PRO   </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">CLM </span> <span style="color:blue;font-weight:bold;">AUX</span>     <span style="color:blue;font-weight:bold;">  A   </span>
+ │        │     │      │      │   │    │        │    
+<span style="color:red;font-weight:bold;">His</span>     <span style="color:red;font-weight:bold;">mother</span> <span style="color:red;font-weight:bold;">told</span> <span style="color:red;font-weight:bold;">  him   </span> <span style="color:red;font-weight:bold;">not</span> <span style="color:red;font-weight:bold;"> to </span> <span style="color:red;font-weight:bold;">be </span>     <span style="color:red;font-weight:bold;">greedy</span>
+
+UD2RRG tree:
+                    <span style="color:blue;font-weight:bold;">SENTENCE</span>                        
+                       │                             
+                    <span style="color:blue;font-weight:bold;"> CLAUSE </span>                        
+          ┌────────────┴──────────┐                  
+          │                      <span style="color:blue;font-weight:bold;">CORE</span>               
+          │                   ┌───┼────────┐         
+         CORE                 │   │       <span style="color:blue;font-weight:bold;">NUC</span>       
+     ┌────┴─────┬──────┐      │   │    ┌───┴────┐    
+    <span style="color:blue;font-weight:bold;">NP </span>         │      │      │   │    │      <span style="color:blue;font-weight:bold;">  AP  </span>
+ ┌───┴────┐     │      │      │   │    │        │    
+ │      <span style="color:blue;font-weight:bold;">CORE_N</span>  │      │      │   │    │      <span style="color:blue;font-weight:bold;">CORE_A</span>
+ │        │     │      │      │   │    │        │    
+ │      <span style="color:blue;font-weight:bold;">NUC_N </span> NUC  <span style="color:blue;font-weight:bold;">   NP   </span>  │   │    │      <span style="color:blue;font-weight:bold;">NUC_A </span>
+ │        │     │      │      │   │    │        │    
+<span style="color:blue;font-weight:bold;">OP </span>     <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">  PRO   </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">CLM </span> <span style="color:blue;font-weight:bold;">AUX</span>     <span style="color:blue;font-weight:bold;">  A   </span>
+ │        │     │      │      │   │    │        │    
+<span style="color:red;font-weight:bold;">His</span>     <span style="color:red;font-weight:bold;">mother</span> <span style="color:red;font-weight:bold;">told</span> <span style="color:red;font-weight:bold;">  him   </span> <span style="color:red;font-weight:bold;">not</span> <span style="color:red;font-weight:bold;"> to </span> <span style="color:red;font-weight:bold;">be </span>     <span style="color:red;font-weight:bold;">greedy</span>
+
+BURP:  (1.0, ['move CORE to CLAUSE'])
+Gold tree:
+                                 SENTENCE                                       
+                                    │                                            
+                                  CLAUSE                                        
+  ┌─────────────────────────────────┴───────┐                                    
+  │                                       CLAUSE                                
+  │                ┌────────────────────────┴──────┐                             
+  │                │                             CLAUSE                         
+  │                │                               │                             
+  │                │                              CORE                          
+  │                │                ┌───────┬──────┼───────────┐                 
+  │                │                │       │      │           NP               
+  │                │                │       │      │     ┌─────┴──────┐          
+  │               CORE              │       │      │     │          <span style="color:blue;font-weight:bold;">CORE_N</span>      
+  │       ┌────────┼────────┐       │       │      │     │     ┌──────┴──────┐   
+CLAUSE <span style="color:blue;font-weight:bold;">  ADVP  </span> <span style="color:blue;font-weight:bold;">  ADVP  </span>    │       │       │      │     │   <span style="color:blue;font-weight:bold;">  AP  </span>          │  
+  │       │        │        │       │       │      │     │     │             │   
+ CORE  CORE_ADV <span style="color:blue;font-weight:bold;">CORE_ADV</span>    │       │       │      │    NPIP <span style="color:blue;font-weight:bold;">CORE_A</span>          │  
+  │       │        │        │       │       │      │     │     │             │   
+ NUC   NUC_ADV  <span style="color:blue;font-weight:bold;">NUC_ADV </span> <span style="color:blue;font-weight:bold;">  NUC  </span> <span style="color:blue;font-weight:bold;">   NP   </span>   │    <span style="color:blue;font-weight:bold;"> NUC  </span> <span style="color:blue;font-weight:bold;"> NP </span> <span style="color:blue;font-weight:bold;">NUC_A </span>        <span style="color:blue;font-weight:bold;">NUC_N</span>
+  │       │        │        │       │       │      │     │     │             │   
+  UH   <span style="color:blue;font-weight:bold;">  ADV   </span> <span style="color:blue;font-weight:bold;">  ADV   </span> <span style="color:blue;font-weight:bold;">   V   </span> <span style="color:blue;font-weight:bold;">  PRO   </span> <span style="color:blue;font-weight:bold;">  OP  </span> <span style="color:blue;font-weight:bold;">  V   </span> <span style="color:blue;font-weight:bold;">PRO </span> <span style="color:blue;font-weight:bold;">  A   </span>        <span style="color:blue;font-weight:bold;">  N  </span>
+  │       │        │        │       │       │      │     │     │             │   
+<span style="color:red;font-weight:bold;">  Ah  </span> <span style="color:red;font-weight:bold;">  well  </span> <span style="color:red;font-weight:bold;">  just  </span> <span style="color:red;font-weight:bold;">thought</span> <span style="color:red;font-weight:bold;">   I    </span> <span style="color:red;font-weight:bold;">  'd  </span> <span style="color:red;font-weight:bold;"> ask  </span> <span style="color:red;font-weight:bold;">you </span> <span style="color:red;font-weight:bold;"> old  </span>        <span style="color:red;font-weight:bold;"> boy </span>
+
+UD2RRG tree:
+                                <span style="color:blue;font-weight:bold;">SENTENCE</span>                                   
+ ┌────┬────────────────────────────┼─────────────────────────────┐          
+ │    │                            │                            VOC        
+ │    │                            │                             │          
+ │    │                          CLAUSE                          NP        
+ │    │             ┌──────────────┴───────┐                     │          
+ │    │            CORE                    │                   <span style="color:blue;font-weight:bold;">CORE_N</span>      
+ │    │      ┌──────┴──────┐               │              ┌──────┴──────┐   
+ │    │   <span style="color:blue;font-weight:bold;">  ADVP  </span>         │             CLAUSE         <span style="color:blue;font-weight:bold;">  AP  </span>          │  
+ │    │      │             │               │              │             │   
+CDP  CDP  <span style="color:blue;font-weight:bold;">CORE_ADV</span>         │              CORE          <span style="color:blue;font-weight:bold;">CORE_A</span>          │  
+ │    │      │             │       ┌───────┼─────┬───┐    │             │   
+ADVP <span style="color:blue;font-weight:bold;">ADVP</span> <span style="color:blue;font-weight:bold;">NUC_ADV </span>      <span style="color:blue;font-weight:bold;">  NUC  </span> <span style="color:blue;font-weight:bold;">   NP   </span>   │    <span style="color:blue;font-weight:bold;">NUC</span> <span style="color:blue;font-weight:bold;">NP </span> <span style="color:blue;font-weight:bold;">NUC_A </span>        <span style="color:blue;font-weight:bold;">NUC_N</span>
+ │    │      │             │       │       │     │   │    │             │   
+ADV  <span style="color:blue;font-weight:bold;">ADV </span> <span style="color:blue;font-weight:bold;">  ADV   </span>      <span style="color:blue;font-weight:bold;">   V   </span> <span style="color:blue;font-weight:bold;">  PRO   </span> <span style="color:blue;font-weight:bold;">  OP  </span> <span style="color:blue;font-weight:bold;"> V </span> <span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">  A   </span>        <span style="color:blue;font-weight:bold;">  N  </span>
+ │    │      │             │       │       │     │   │    │             │   
+<span style="color:red;font-weight:bold;"> Ah </span> <span style="color:red;font-weight:bold;">well</span> <span style="color:red;font-weight:bold;">  just  </span>      <span style="color:red;font-weight:bold;">thought</span> <span style="color:red;font-weight:bold;">   I    </span> <span style="color:red;font-weight:bold;">  'd  </span> <span style="color:red;font-weight:bold;">ask</span> <span style="color:red;font-weight:bold;">you</span> <span style="color:red;font-weight:bold;"> old  </span>        <span style="color:red;font-weight:bold;"> boy </span>
+
+BURP:  (13.0, ['relabel CORE to CDP', 'relabel NUC to ADVP', 'relabel UH to ADV', 'relabel CORE_ADV to CDP', 'relabel NUC_ADV to ADVP', 'move NPIP to CORE', 'delete NPIP', 'insert VOC', 'delete CLAUSE', 'move ADVP to SENTENCE', 'move VOC to SENTENCE', 'delete CLAUSE', 'delete ADVP'])
+Gold tree:
+                      SENTENCE                     
+                         │                          
+                       CLAUSE                      
+          ┌──────────────┴───────────┐              
+         CORE                       CORE           
+     ┌────┴──────┐       ┌──────┬────┴────┐         
+    NP           │       │      │        NP        
+ ┌───┴────┐      │       │      │    ┌────┼────┐    
+ │      <span style="color:blue;font-weight:bold;">CORE_N</span>   │       │      │   NPIP  │  <span style="color:blue;font-weight:bold;">CORE_N</span>
+ │        │      │       │      │    │    │    │    
+ │      <span style="color:blue;font-weight:bold;">NUC_N </span> <span style="color:blue;font-weight:bold;"> NUC  </span>    │     <span style="color:blue;font-weight:bold;">NUC </span>  NP   │  <span style="color:blue;font-weight:bold;">NUC_N </span>
+ │        │      │       │      │    │    │    │    
+<span style="color:blue;font-weight:bold;">OP </span>     <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">  V   </span> <span style="color:blue;font-weight:bold;">  CLM   </span> <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">PRO </span> <span style="color:blue;font-weight:bold;">POS</span> <span style="color:blue;font-weight:bold;">  N   </span>
+ │        │      │       │      │    │    │    │    
+<span style="color:red;font-weight:bold;">The</span>     <span style="color:red;font-weight:bold;"> air  </span> <span style="color:red;font-weight:bold;">seemed</span> <span style="color:red;font-weight:bold;">   to   </span> <span style="color:red;font-weight:bold;">kiss</span> <span style="color:red;font-weight:bold;">one </span> <span style="color:red;font-weight:bold;">'s </span> <span style="color:red;font-weight:bold;"> skin </span>
+
+UD2RRG tree:
+                      <span style="color:blue;font-weight:bold;">SENTENCE</span>                          
+                         │                               
+                      <span style="color:blue;font-weight:bold;"> CLAUSE </span>                          
+          ┌──────────────┴───────────┐                   
+        <span style="color:blue;font-weight:bold;"> CORE </span>                      <span style="color:blue;font-weight:bold;">CORE</span>                
+     ┌────┴──────┐       ┌──────┬────┴─────────┐         
+    <span style="color:blue;font-weight:bold;">NP </span>          │       │      │             <span style="color:blue;font-weight:bold;">NP </span>       
+ ┌───┴────┐      │       │      │         ┌────┴────┐    
+ │      <span style="color:blue;font-weight:bold;">CORE_N</span>   │       │      │        NPIP     <span style="color:blue;font-weight:bold;">CORE_N</span>
+ │        │      │       │      │         │         │    
+ │      <span style="color:blue;font-weight:bold;">NUC_N </span> <span style="color:blue;font-weight:bold;"> NUC  </span>    │     <span style="color:blue;font-weight:bold;">NUC </span>       NP      <span style="color:blue;font-weight:bold;">NUC_N </span>
+ │        │      │       │      │    ┌────┴────┐    │    
+<span style="color:blue;font-weight:bold;">OP </span>     <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">  V   </span> <span style="color:blue;font-weight:bold;">  CLM   </span> <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">PRO </span>      <span style="color:blue;font-weight:bold;">POS</span> <span style="color:blue;font-weight:bold;">  N   </span>
+ │        │      │       │      │    │         │    │    
+<span style="color:red;font-weight:bold;">The</span>     <span style="color:red;font-weight:bold;"> air  </span> <span style="color:red;font-weight:bold;">seemed</span> <span style="color:red;font-weight:bold;">   to   </span> <span style="color:red;font-weight:bold;">kiss</span> <span style="color:red;font-weight:bold;">one </span>      <span style="color:red;font-weight:bold;">'s </span> <span style="color:red;font-weight:bold;"> skin </span>
+
+BURP:  (1.0, ['move POS to NP'])
+Gold tree:
+    SENTENCE                                       
+       │                                            
+     CLAUSE                                        
+       │                                            
+      CORE                                         
+ ┌─────┴──────┐                                     
+ │           NUC                                   
+ │     ┌──────┴────┐                                
+ │     │           NP                              
+ │     │      ┌────┴──────┐                         
+ │     │      │         CORE_N                     
+ │     │      │    ┌──────┼────────────┐            
+ │     │      │    │      │          <span style="color:blue;font-weight:bold;">  PP  </span>        
+ │     │      │    │      │            │            
+ │     │      │    │      │          <span style="color:blue;font-weight:bold;">CORE_P</span>        
+ │     │      │    │      │      ┌─────┴───────┐    
+ │     │      │  <span style="color:blue;font-weight:bold;">  AP  </span>   │      │          <span style="color:blue;font-weight:bold;">  NP   </span>
+ │     │      │    │      │      │             │    
+ │     │      │  <span style="color:blue;font-weight:bold;">CORE_A</span>   │      │          <span style="color:blue;font-weight:bold;">CORE_N </span>
+ │     │      │    │      │      │             │    
+<span style="color:blue;font-weight:bold;">NP </span>    │      │  <span style="color:blue;font-weight:bold;">NUC_A </span> <span style="color:blue;font-weight:bold;">NUC_N </span> <span style="color:blue;font-weight:bold;">NUC_P</span>         NUC_N 
+ │     │      │    │      │      │             │    
+<span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">  AUX   </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">  A   </span> <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">  P  </span>           N   
+ │     │      │    │      │      │             │    
+<span style="color:red;font-weight:bold;">It </span> <span style="color:red;font-weight:bold;">  was   </span> <span style="color:red;font-weight:bold;">the</span> <span style="color:red;font-weight:bold;">lonely</span> <span style="color:red;font-weight:bold;"> hour </span> <span style="color:red;font-weight:bold;"> of  </span>        <span style="color:red;font-weight:bold;">fifteen</span>
+
+UD2RRG tree:
+    <span style="color:blue;font-weight:bold;">SENTENCE</span>                                       
+       │                                            
+    <span style="color:blue;font-weight:bold;"> CLAUSE </span>                                       
+       │                                            
+    <span style="color:blue;font-weight:bold;">  CORE  </span>                                       
+ ┌─────┴──────┐                                     
+ │           <span style="color:blue;font-weight:bold;">NUC</span>                                   
+ │     ┌──────┴────┐                                
+ │     │         <span style="color:blue;font-weight:bold;">  NP  </span>                            
+ │     │      ┌────┴──────┐                         
+ │     │      │         <span style="color:blue;font-weight:bold;">CORE_N</span>                     
+ │     │      │    ┌──────┼────────────┐            
+ │     │      │    │      │          <span style="color:blue;font-weight:bold;">  PP  </span>        
+ │     │      │    │      │            │            
+ │     │      │    │      │          <span style="color:blue;font-weight:bold;">CORE_P</span>        
+ │     │      │    │      │      ┌─────┴───────┐    
+ │     │      │  <span style="color:blue;font-weight:bold;">  AP  </span>   │      │          <span style="color:blue;font-weight:bold;">  NP   </span>
+ │     │      │    │      │      │             │    
+ │     │      │  <span style="color:blue;font-weight:bold;">CORE_A</span>   │      │          <span style="color:blue;font-weight:bold;">CORE_N </span>
+ │     │      │    │      │      │             │    
+<span style="color:blue;font-weight:bold;">NP </span>    │      │  <span style="color:blue;font-weight:bold;">NUC_A </span> <span style="color:blue;font-weight:bold;">NUC_N </span> <span style="color:blue;font-weight:bold;">NUC_P</span>         NUC_Q 
+ │     │      │    │      │      │             │    
+<span style="color:blue;font-weight:bold;">PRO</span> <span style="color:blue;font-weight:bold;">  AUX   </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">  A   </span> <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">  P  </span>          QNT  
+ │     │      │    │      │      │             │    
+<span style="color:red;font-weight:bold;">It </span> <span style="color:red;font-weight:bold;">  was   </span> <span style="color:red;font-weight:bold;">the</span> <span style="color:red;font-weight:bold;">lonely</span> <span style="color:red;font-weight:bold;"> hour </span> <span style="color:red;font-weight:bold;"> of  </span>        <span style="color:red;font-weight:bold;">fifteen</span>
+
+BURP:  (2.0, ['relabel NUC_N to NUC_Q', 'relabel N to QNT'])
+Gold tree:
+                        SENTENCE                     
+        ┌──────────────────┴────────────┐             
+       PrDP                             │            
+        │                               │             
+        PP                              │            
+        │                               │             
+      CORE_P                            │            
+  ┌─────┴─────┐                         │             
+  │          NP                       CLAUSE         
+  │     ┌─────┴────┐              ┌─────┴─────┐       
+  │     │        <span style="color:blue;font-weight:bold;">CORE_N</span>           │          CORE    
+  │     │          │       ┌───── │ ──────────┼────┐  
+<span style="color:blue;font-weight:bold;">NUC_P</span>   │        <span style="color:blue;font-weight:bold;">NUC_N </span> <span style="color:blue;font-weight:bold;">   NP   </span>  │          <span style="color:blue;font-weight:bold;">NUC </span> <span style="color:blue;font-weight:bold;">NP </span>
+  │     │          │       │      │           │    │  
+<span style="color:blue;font-weight:bold;">  P  </span> <span style="color:blue;font-weight:bold;">  OP  </span>     <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">  PRO   </span> <span style="color:blue;font-weight:bold;"> OP </span>        <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">PRO</span>
+  │     │          │       │      │           │    │  
+<span style="color:red;font-weight:bold;"> In  </span> <span style="color:red;font-weight:bold;"> the  </span>     <span style="color:red;font-weight:bold;"> end  </span> <span style="color:red;font-weight:bold;">  they  </span> <span style="color:red;font-weight:bold;">will</span>        <span style="color:red;font-weight:bold;">beat</span> <span style="color:red;font-weight:bold;">you</span>
+
+UD2RRG tree:
+                        <span style="color:blue;font-weight:bold;">SENTENCE</span>              
+                           │                   
+                         CLAUSE               
+                   ┌───────┴──────┐            
+                  CORE            │           
+        ┌──────────┴───────┬───── │ ───┬────┐  
+      <span style="color:blue;font-weight:bold;">  PP  </span>               │      │    │    │ 
+        │                  │      │    │    │  
+      <span style="color:blue;font-weight:bold;">CORE_P</span>               │      │    │    │ 
+  ┌─────┴─────┐            │      │    │    │  
+  │          <span style="color:blue;font-weight:bold;">NP </span>           │      │    │    │ 
+  │     ┌─────┴────┐       │      │    │    │  
+  │     │        <span style="color:blue;font-weight:bold;">CORE_N</span>    │      │    │    │ 
+  │     │          │       │      │    │    │  
+<span style="color:blue;font-weight:bold;">NUC_P</span>   │        <span style="color:blue;font-weight:bold;">NUC_N </span> <span style="color:blue;font-weight:bold;">   NP   </span>  │   <span style="color:blue;font-weight:bold;">NUC </span> <span style="color:blue;font-weight:bold;">NP </span>
+  │     │          │       │      │    │    │  
+<span style="color:blue;font-weight:bold;">  P  </span> <span style="color:blue;font-weight:bold;">  OP  </span>     <span style="color:blue;font-weight:bold;">  N   </span> <span style="color:blue;font-weight:bold;">  PRO   </span> <span style="color:blue;font-weight:bold;"> OP </span> <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">PRO</span>
+  │     │          │       │      │    │    │  
+<span style="color:red;font-weight:bold;"> In  </span> <span style="color:red;font-weight:bold;"> the  </span>     <span style="color:red;font-weight:bold;"> end  </span> <span style="color:red;font-weight:bold;">  they  </span> <span style="color:red;font-weight:bold;">will</span> <span style="color:red;font-weight:bold;">beat</span> <span style="color:red;font-weight:bold;">you</span>
+
+BURP:  (2.0, ['move PrDP to CORE', 'delete PrDP'])
+Gold tree:
+                             SENTENCE                                            
+                                │                                                 
+                              CLAUSE                                             
+     ┌────────────────┬─────────┴───────┐                                         
+     │                │               CORE                                       
+     │          ┌──── │ ──┬─────┬───────┴─────────────────┐                       
+     │          │     │   │     │                         PP                     
+     │          │     │   │     │                         │                       
+     │          │     │   │     │                       CORE_P                   
+     │          │     │   │     │       ┌─────────────────┴─────┐                 
+     │          │     │   │     │       │                      NP                
+     │          │     │   │     │       │            ┌──────────┴────────┐        
+     │       <span style="color:blue;font-weight:bold;">  NP   </span>  │   │     │       │           NP                   NP      
+     │          │     │   │     │       │      ┌─────┴────┐              │        
+     │       <span style="color:blue;font-weight:bold;">CORE_N </span>  │   │     │       │      │        CORE_N         CORE_N    
+     │          │     │   │     │       │      │          │              │        
+     │       <span style="color:blue;font-weight:bold;"> NUC_N </span>  │   │  <span style="color:blue;font-weight:bold;">  NUC   </span> <span style="color:blue;font-weight:bold;">NUC_P</span>    │        <span style="color:blue;font-weight:bold;">NUC_N </span>         NUC_N     
+     │          │     │   │     │       │      │          │         ┌────┴─────┐  
+    CLM      <span style="color:blue;font-weight:bold;">   N   </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">   V    </span> <span style="color:blue;font-weight:bold;">  P  </span> <span style="color:blue;font-weight:bold;">  OP   </span>     <span style="color:blue;font-weight:bold;">  N   </span>     <span style="color:blue;font-weight:bold;">CLM</span>         N 
+     │          │     │   │     │       │      │          │         │          │  
+<span style="color:red;font-weight:bold;">Nevertheless</span> <span style="color:red;font-weight:bold;">Winston</span> <span style="color:red;font-weight:bold;">did</span> <span style="color:red;font-weight:bold;">not</span> <span style="color:red;font-weight:bold;"> speak  </span> <span style="color:red;font-weight:bold;"> for </span> <span style="color:red;font-weight:bold;">another</span>     <span style="color:red;font-weight:bold;">moment</span>     <span style="color:red;font-weight:bold;">or </span>        <span style="color:red;font-weight:bold;">two</span>
+
+UD2RRG tree:
+                             <span style="color:blue;font-weight:bold;">SENTENCE</span>                                           
+                                │                                                
+                             <span style="color:blue;font-weight:bold;"> CLAUSE </span>                                           
+     ┌────────────────┬─────────┴───────┐                                        
+     │                │               <span style="color:blue;font-weight:bold;">CORE </span>                                     
+     │          ┌──── │ ──┬─────┬───────┴─────────────┐                          
+     │          │     │   │     │                   <span style="color:blue;font-weight:bold;">  PP  </span>                      
+     │          │     │   │     │                     │                          
+     │          │     │   │     │                   <span style="color:blue;font-weight:bold;">CORE_P</span>                      
+     │          │     │   │     │       ┌─────────────┴─────┐                    
+     │          │     │   │     │       │                  <span style="color:blue;font-weight:bold;">NP </span>                  
+     │          │     │   │     │       │      ┌────────────┴────┐               
+     │          │     │   │     │       │      │               CORE_N           
+     │          │     │   │     │       │      │      ┌──────────┴─────┐         
+    ADVP     <span style="color:blue;font-weight:bold;">  NP   </span>  │   │     │       │      │      │               QP        
+     │          │     │   │     │       │      │      │          ┌─────┴────┐    
+  CORE_ADV   <span style="color:blue;font-weight:bold;">CORE_N </span>  │   │     │       │      │      │          │        CORE_Q
+     │          │     │   │     │       │      │      │          │          │    
+  NUC_ADV    <span style="color:blue;font-weight:bold;"> NUC_N </span>  │   │  <span style="color:blue;font-weight:bold;">  NUC   </span> <span style="color:blue;font-weight:bold;">NUC_P</span>    │    <span style="color:blue;font-weight:bold;">NUC_N </span>       │        NUC_Q 
+     │          │     │   │     │       │      │      │          │          │    
+    ADV      <span style="color:blue;font-weight:bold;">   N   </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">OP </span> <span style="color:blue;font-weight:bold;">   V    </span> <span style="color:blue;font-weight:bold;">  P  </span> <span style="color:blue;font-weight:bold;">  OP   </span> <span style="color:blue;font-weight:bold;">  N   </span>     <span style="color:blue;font-weight:bold;"> CLM  </span>      QNT  
+     │          │     │   │     │       │      │      │          │          │    
+<span style="color:red;font-weight:bold;">Nevertheless</span> <span style="color:red;font-weight:bold;">Winston</span> <span style="color:red;font-weight:bold;">did</span> <span style="color:red;font-weight:bold;">not</span> <span style="color:red;font-weight:bold;"> speak  </span> <span style="color:red;font-weight:bold;"> for </span> <span style="color:red;font-weight:bold;">another</span> <span style="color:red;font-weight:bold;">moment</span>     <span style="color:red;font-weight:bold;">  or  </span>     <span style="color:red;font-weight:bold;"> two  </span>
+
+BURP:  (13.0, ['relabel CLM to ADVP', 'insert CORE_ADV', 'insert NUC_ADV', 'insert ADV', 'relabel N to CORE_Q', 'insert NUC_Q', 'insert QNT', 'relabel NUC_N to QP', 'move CORE_N to CORE_N', 'delete CORE_N', 'move NP to NP', 'delete NP', 'delete NP'])
+Gold tree:
+                   SENTENCE                                   
+                      │                                        
+                    CLAUSE                                    
+     ┌────────────────┴───────┐                                
+     │                      CLAUSE                            
+     │         ┌──────────────┴──────┐                         
+     │         │                   CORE                       
+     │         │                     │                         
+     │         │                    NUC                       
+     │         │      ┌──────────────┴─────┐                   
+     │         │      │                    PP                 
+     │         │      │                    │                   
+     │         │      │                  CORE_P               
+     │         │      │       ┌────────────┴──────┐            
+     │         │      │       │                   NP          
+     │         │      │       │            ┌──────┴───────┐    
+     │         │      │       │            NP             │   
+     │         │      │       │            │              │    
+     │         │      │       │          CORE_N           │   
+     │         │      │       │      ┌─────┴──────┐       │    
+     │         │      │       │      │          <span style="color:blue;font-weight:bold;">  QP  </span> <span style="color:blue;font-weight:bold;">  NP   </span>
+     │         │      │       │      │            │       │    
+    <span style="color:blue;font-weight:bold;">CORE</span>      <span style="color:blue;font-weight:bold;">PrCS</span>    │       │      │          <span style="color:blue;font-weight:bold;">CORE_Q</span> <span style="color:blue;font-weight:bold;">CORE_N </span>
+ ┌───┴────┐    │      │       │      │            │       │    
+<span style="color:blue;font-weight:bold;">NP </span>      <span style="color:blue;font-weight:bold;">NUC </span> <span style="color:blue;font-weight:bold;"> NP </span>    │     <span style="color:blue;font-weight:bold;">NUC_P </span> <span style="color:blue;font-weight:bold;">NUC_N</span>        <span style="color:blue;font-weight:bold;">NUC_Q </span> <span style="color:blue;font-weight:bold;"> NUC_N </span>
+ │        │    │      │       │      │            │       │    
+<span style="color:blue;font-weight:bold;">PRO</span>      <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">PRO </span> <span style="color:blue;font-weight:bold;">  AUX   </span> <span style="color:blue;font-weight:bold;">  P   </span> <span style="color:blue;font-weight:bold;">  N  </span>        <span style="color:blue;font-weight:bold;"> QNT  </span> <span style="color:blue;font-weight:bold;">   N   </span>
+ │        │    │      │       │      │            │       │    
+<span style="color:red;font-weight:bold;">You</span>      <span style="color:red;font-weight:bold;">know</span> <span style="color:red;font-weight:bold;">what</span> <span style="color:red;font-weight:bold;">   is   </span> <span style="color:red;font-weight:bold;">  in  </span> <span style="color:red;font-weight:bold;">Room </span>        <span style="color:red;font-weight:bold;"> 101  </span> <span style="color:red;font-weight:bold;">Winston</span>
+
+UD2RRG tree:
+                          <span style="color:blue;font-weight:bold;">SENTENCE</span>                                  
+                     ┌───────┴──────────────────────────────────┐    
+                   CLAUSE                                       │   
+     ┌───────────────┴───────┐                                  │    
+     │                     CLAUSE                               │   
+     │         ┌─────────────┴──────┐                           │    
+     │         │                   CORE                         │   
+     │         │                    │                           │    
+     │         │                   NUC                          │   
+     │         │     ┌──────────────┴─────┐                     │    
+     │         │     │                    PP                    │   
+     │         │     │                    │                     │    
+     │         │     │                  CORE_P                  │   
+     │         │     │       ┌────────────┴──────┐              │    
+     │         │     │       │                 <span style="color:blue;font-weight:bold;">  NP  </span>           │   
+     │         │     │       │                   │              │    
+     │         │     │       │                 <span style="color:blue;font-weight:bold;">CORE_N</span>          VOC  
+     │         │     │       │            ┌──────┴──────┐       │    
+     │         │     │       │            │           <span style="color:blue;font-weight:bold;">  QP  </span> <span style="color:blue;font-weight:bold;">  NP   </span>
+     │         │     │       │            │             │       │    
+    <span style="color:blue;font-weight:bold;">CORE</span>      <span style="color:blue;font-weight:bold;">PrCS</span>   │       │            │           <span style="color:blue;font-weight:bold;">CORE_Q</span> <span style="color:blue;font-weight:bold;">CORE_N </span>
+ ┌───┴────┐    │     │       │            │             │       │    
+<span style="color:blue;font-weight:bold;">NP </span>      <span style="color:blue;font-weight:bold;">NUC </span> <span style="color:blue;font-weight:bold;"> NP </span>   │    <span style="color:blue;font-weight:bold;"> NUC_P  </span>      <span style="color:blue;font-weight:bold;">NUC_N </span>        <span style="color:blue;font-weight:bold;">NUC_Q </span> <span style="color:blue;font-weight:bold;"> NUC_N </span>
+ │        │    │     │       │            │             │       │    
+<span style="color:blue;font-weight:bold;">PRO</span>      <span style="color:blue;font-weight:bold;"> V  </span> <span style="color:blue;font-weight:bold;">PRO </span> <span style="color:blue;font-weight:bold;"> AUX  </span> <span style="color:blue;font-weight:bold;">   P    </span>      <span style="color:blue;font-weight:bold;">  N   </span>        <span style="color:blue;font-weight:bold;"> QNT  </span> <span style="color:blue;font-weight:bold;">   N   </span>
+ │        │    │     │       │            │             │       │    
+<span style="color:red;font-weight:bold;">You</span>      <span style="color:red;font-weight:bold;">know</span> <span style="color:red;font-weight:bold;">what</span> <span style="color:red;font-weight:bold;">  is  </span> <span style="color:red;font-weight:bold;">   in   </span>      <span style="color:red;font-weight:bold;"> Room </span>        <span style="color:red;font-weight:bold;"> 101  </span> <span style="color:red;font-weight:bold;">Winston</span>
+
+BURP:  (3.0, ['move NP to CORE_P', 'relabel NP to VOC', 'move VOC to SENTENCE'])
+3.5
+0.17279401069330927
+</pre>
+</body>
+</html>

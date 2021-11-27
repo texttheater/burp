@@ -8,14 +8,16 @@ import argparse
 import levenshtein
 import logging
 import os
-import sys
+import re
 
 
 from discodop.punctuation import applypunct
-from discodop.tree import DrawTree, ParentedTree
-from discodop.treebank import DiscBracketCorpusReader
+from discodop.tree import DrawTree, ParentedTree, Tree
+from discodop.treebank import DiscBracketCorpusReader, incrementaltreereader, incrementaltreereader
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Sequence, \
         Tuple, Union
+from discodop.eval import Evaluator, TreePairResult, readparam
+
 
 
 Action = str # for now
@@ -298,6 +300,8 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     # Assertions
     logging.debug('Source subtree:\n%s', pp_tree(xchain1[0], sent))
     logging.debug('Target subtree:\n%s', pp_tree(chain2[0], sent))
+    print(xchain1[0])
+    print(chain2[0])
     assert xchain1[0] == chain2[0]
     # Record
     mapping[target_span] = xchain1[0]
@@ -374,6 +378,28 @@ def pad(block: Sequence[str], margin: int=0) -> List[str]:
     ] # TODO grapheme cluster support
 
 
+def find_constituents(tree):
+    #return strbracketings(bracketings(tree.freeze())).split(", ")
+    constlst = []
+    for stree in tree.subtrees():
+        const = (stree.label, sorted([x for x in stree.leaves()]))
+        constlst.append(const)
+    return constlst
+
+def sort_children(tree):
+    # sort children in the resulted tree
+    for a in tree.subtrees(lambda n: isinstance(n[0], Tree)):
+        a.children.sort(key=lambda n: min(n.leaves()))
+
+
+def read_file_with_trees(path):
+    input_lst = []
+    with open(path, 'r') as inf:
+        for line in inf:
+            if len(line.strip()) > 0:
+               input_lst.append(line) # '##' +
+    return input_lst
+
 if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('path1', help='source trees in .discbracket format')
@@ -381,21 +407,59 @@ if __name__ == '__main__':
     arg_parser.add_argument('-v', '--verbose', action='count', default=0,
             help='Verbosity. Give once for printing trees, twice for debugging.')
     args = arg_parser.parse_args()
-    inp1 = DiscBracketCorpusReader(args.path1)
-    inp2 = DiscBracketCorpusReader(args.path2)
+    bracketed_sentences_predicted = read_file_with_trees(args.path1)
+    bracketed_sentences_gold = read_file_with_trees(args.path2)
+    #inp1 = DiscBracketCorpusReader(args.path1, functions=None)
+    #inp2 = DiscBracketCorpusReader(args.path2, functions=None)
+    burp_scores = []
+    norm_burp_scores = []
+    problematic_sentences = []
+
     if args.verbose == 1:
         logging.basicConfig(level=logging.INFO)
     elif args.verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
-    for t1, t2 in zip(inp1.itertrees(), inp2.itertrees()):
-        key1, item1 = t1
-        key2, item2 = t2
-        assert key1 == key2
-        tree1 = item1.tree
-        sent1 = item1.sent
-        tree2 = item2.tree
-        sent2 = item2.sent
-        applypunct('remove', tree1, sent1)
-        applypunct('remove', tree2, sent2)
-        assert sent1 == sent2
-        print(burp(tree1, tree2, sent1))
+    for tg, tp in zip(bracketed_sentences_gold, bracketed_sentences_predicted):
+        if tg.startswith('(') and tp.startswith('('):
+       
+            tg = re.sub(r'-[A-Z-=\[\]]+', '', tg) # remove function tags
+            tp = re.sub(r'-[A-Z-=\[\]]+', '', tp)
+            [tree1, sent1] = [[q[0], q[1]] for q in incrementaltreereader(tg)][0]
+            [tree2, sent2] = [[q[0], q[1]]  for q in incrementaltreereader(tp)][0]
+            #sent1 = [q[1] for q in incrementaltreereader(tg)][0]
+            #sent2 = [q[1] for q in incrementaltreereader(tp)][0]
+            sort_children(tree1)
+            sort_children(tree2)
+            print()
+    #for t1, t2 in zip(inp1.itertrees(), inp2.itertrees()):
+            #key1, item1 = t1
+            #key2, item2 = t2
+            #assert key1 == key2
+            #tree1 = item1.tree
+            #sent1 = item1.sent
+            #tree2 = item2.tree
+            #sent2 = item2.sent
+
+            applypunct('remove', tree1, sent1)
+            applypunct('remove', tree2, sent2)
+            print(sent1)
+            assert sent1 == sent2
+            #treepair = TreePairResult(1,tree1, sent1,
+            #                          tree2, sent2,
+            #                          readparam('/home/tania/Documents/ParTAGe_Models/UD2RRG2021_Evaluation/evaluate_evalb/evalparam.prm'))
+            #print('Gold tree:\n%s\nUD2RRG tree:\n%s' % (
+            #        treepair.visualize(gold=True), treepair.visualize(gold=False)))
+            resul = burp(tree1, tree2, sent1)
+            print("BURP: ", resul)
+            burp_scores.append(resul[0])
+            gold_brackets = find_constituents(tree1)
+
+            norm_burp_scores.append(resul[0]/len(gold_brackets))
+        else:
+            problematic_sentences.append((tg, tp))
+
+
+
+
+    print(sum(burp_scores)/len(burp_scores))
+    print(sum(norm_burp_scores)/len(norm_burp_scores))
