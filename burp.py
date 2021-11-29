@@ -11,9 +11,10 @@ import os
 import sys
 
 
-from discodop.punctuation import applypunct
+from discodop.punctuation import PUNCTUATION
 from discodop.tree import DrawTree, ParentedTree
 from discodop.treebank import DiscBracketCorpusReader
+from discodop.treetransforms import removeterminals
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Sequence, \
         Tuple, Union
 
@@ -22,6 +23,10 @@ Action = str # for now
 Script = List[Action]
 Span = FrozenSet[int]
 Subtree = Union[ParentedTree, int]
+
+
+def ispunct(word, tag):
+    return word in PUNCTUATION
 
 
 def span(t: Subtree) -> Span:
@@ -401,7 +406,7 @@ if __name__ == '__main__':
         sent1 = item1.sent
         tree2 = item2.tree
         sent2 = item2.sent
-        applypunct('remove', tree1, sent1)
-        applypunct('remove', tree2, sent2)
         assert sent1 == sent2
+        removeterminals(tree1, sent1, ispunct)
+        removeterminals(tree2, sent2, ispunct)
         print(burp(tree1, tree2, sent1))
