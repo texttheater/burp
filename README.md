@@ -11,6 +11,7 @@ Dependencies
 ------------
 
 * [disco-dop](https://github.com/andreasvc/disco-dop)
+* [mypy](https://pypi.org/project/mypy/)
 
 Usage example
 -------------
