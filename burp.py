@@ -399,6 +399,7 @@ if __name__ == '__main__':
     elif args.verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
     for t1, t2 in zip(inp1.itertrees(), inp2.itertrees()):
+        # Read predicted and gold tree
         key1, item1 = t1
         key2, item2 = t2
         assert key1 == key2
@@ -407,6 +408,13 @@ if __name__ == '__main__':
         tree2 = item2.tree
         sent2 = item2.sent
         assert sent1 == sent2
+        # Remove punctuation (TODO make this configurable)
         removeterminals(tree1, sent1, ispunct)
         removeterminals(tree2, sent2, ispunct)
+        # Remove artifical root nodes (TODO make this configurable)
+        if len(tree1) == 1 and tree1.label == 'ROOT':
+            tree1 = tree1[0].detach()
+        if len(tree2) == 1 and tree2.label == 'ROOT':
+            tree2 = tree2[0].detach()
+        # Compute distance
         print(burp(tree1, tree2, sent1))
