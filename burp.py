@@ -199,15 +199,15 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             xchain1[-2].append(t)
             return
         if not is_preleaf(t):
-            for d in t:
+            for d in tuple(t):
                 move(d)
     for n in xchain1[:-2]:
-        for d in n:
+        for d in tuple(n):
             if d not in xchain1:
                 move(d)
     # Free above
     for t in xchain1[:-2]:
-        for d in t:
+        for d in tuple(t):
             if not d in xchain1:
                 parts.append(d.detach())
     # Edit chain
@@ -256,11 +256,11 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     assert i == len(chain) - 1
     xchain1 = tuple(chain)
     # Move up
-    for t in xchain1[-2]:
+    for t in tuple(xchain1[-2]):
         if not span(t) <= target_span:
             move(t)
     # Free below
-    for t in xchain1[-2]:
+    for t in tuple(xchain1[-2]):
         if not span(t) <= target_span:
             parts.append(t.detach())
     # Move in 
@@ -278,7 +278,7 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
             return
         if is_preleaf(t):
             return
-        for c in t:
+        for c in tuple(t):
             move_in(c)
     for part in tuple(parts):
         move_in(part)
@@ -286,13 +286,13 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     def prune(t: ParentedTree) -> None:
         if t in dtrs1 or is_preleaf(t):
             return
-        for d in t:
+        for d in tuple(t):
             prune(d)
         if span(t) <= target_span:
             script.append(f'delete {t.label}')
             logging.debug(script[-1])
             t.prune()
-    for d in xchain1[-2]:
+    for d in tuple(xchain1[-2]):
         prune(d)
     # Sort children
     xchain1[-2].children.sort(key=lambda c: min(span(c)))
@@ -348,6 +348,12 @@ def pp_tree(t: ParentedTree, sent: List[str]) -> str:
     """Pretty-print a tree
     """
     return str(DrawTree(t, sent))
+
+
+def pp_node(t: Subtree) -> str:
+    if isinstance(t, int):
+        return str(t)
+    return str(t.label)
 
 
 def side_by_side(blocks: Sequence[str], padding: int=0) -> str:
