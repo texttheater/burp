@@ -431,8 +431,8 @@ if __name__ == '__main__':
     for tg, tp in zip(bracketed_sentences_gold, bracketed_sentences_predicted):
         if tg.startswith('(') and tp.startswith('('):
             # Read predicted and gold tree
-            tg = re.sub(r'-[A-Z-=\[\]]+', '', tg) # remove function tags
-            tp = re.sub(r'-[A-Z-=\[\]]+', '', tp)
+            tg = re.sub(r'(?<!\()-[A-Z-=\[\]]+', '', tg) # remove function tags
+            tp = re.sub(r'(?<!\()-[A-Z-=\[\]]+', '', tp)
             [tree1, sent1] = [[q[0], q[1]]  for q in incrementaltreereader(tp)][0]
             [tree2, sent2] = [[q[0], q[1]] for q in incrementaltreereader(tg)][0]
             #sent1 = [q[1] for q in incrementaltreereader(tg)][0]
