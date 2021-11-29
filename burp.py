@@ -11,9 +11,10 @@ import os
 import re
 
 
-from discodop.punctuation import applypunct
+from discodop.punctuation import PUNCTUATION
 from discodop.tree import DrawTree, ParentedTree, Tree
-from discodop.treebank import DiscBracketCorpusReader, incrementaltreereader, incrementaltreereader
+from discodop.treebank import DiscBracketCorpusReader, incrementaltreereader
+from discodop.treetransforms import removeterminals
 from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Sequence, \
         Tuple, Union
 from discodop.eval import Evaluator, TreePairResult, readparam
@@ -24,6 +25,10 @@ Action = str # for now
 Script = List[Action]
 Span = FrozenSet[int]
 Subtree = Union[ParentedTree, int]
+
+
+def ispunct(word, tag):
+    return word in PUNCTUATION
 
 
 def span(t: Subtree) -> Span:
@@ -425,7 +430,7 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.DEBUG)
     for tg, tp in zip(bracketed_sentences_gold, bracketed_sentences_predicted):
         if tg.startswith('(') and tp.startswith('('):
-       
+            # Read predicted and gold tree
             tg = re.sub(r'-[A-Z-=\[\]]+', '', tg) # remove function tags
             tp = re.sub(r'-[A-Z-=\[\]]+', '', tp)
             [tree1, sent1] = [[q[0], q[1]] for q in incrementaltreereader(tg)][0]
@@ -443,11 +448,16 @@ if __name__ == '__main__':
             #sent1 = item1.sent
             #tree2 = item2.tree
             #sent2 = item2.sent
-
-            applypunct('remove', tree1, sent1)
-            applypunct('remove', tree2, sent2)
-            print(sent1)
             assert sent1 == sent2
+            # Remove punctuation (TODO make this configurable)
+            removeterminals(tree1, sent1, ispunct)
+            removeterminals(tree2, sent2, ispunct)
+            # Remove artifical root nodes (TODO make this configurable)
+            if len(tree1) == 1 and tree1.label == 'ROOT':
+                tree1 = tree1[0].detach()
+            if len(tree2) == 1 and tree2.label == 'ROOT':
+                tree2 = tree2[0].detach()
+            # Compute distance
             #treepair = TreePairResult(1,tree1, sent1,
             #                          tree2, sent2,
             #                          readparam('/home/tania/Documents/ParTAGe_Models/UD2RRG2021_Evaluation/evaluate_evalb/evalparam.prm'))
