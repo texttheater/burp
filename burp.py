@@ -300,8 +300,6 @@ def edit(xchain1: Tuple[ParentedTree, ...], chain2: Tuple[ParentedTree, ...], pa
     # Assertions
     logging.debug('Source subtree:\n%s', pp_tree(xchain1[0], sent))
     logging.debug('Target subtree:\n%s', pp_tree(chain2[0], sent))
-    print(xchain1[0])
-    print(chain2[0])
     assert xchain1[0] == chain2[0]
     # Record
     mapping[target_span] = xchain1[0]
