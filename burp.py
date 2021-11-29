@@ -346,6 +346,12 @@ def pp_tree(t: ParentedTree, sent: List[str]) -> str:
     return str(DrawTree(t, sent))
 
 
+def pp_node(t: Subtree) -> str:
+    if isinstance(t, int):
+        return str(t)
+    return str(t.label)
+
+
 def side_by_side(blocks: Sequence[str], padding: int=0) -> str:
     blks = tuple(pad(fixed_splitlines(b), padding) for b in blocks)
     widths = tuple(len(b[0]) for b in blks) # TODO grapheme cluster support
