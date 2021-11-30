@@ -401,10 +401,10 @@ def read_discbracket(f: IO) -> Iterable[Tuple[ParentedTree, Sentence, bool]]:
         match = NO_PARSE_PATTERN.match(line)
         if match:
             sent = match.group('sentence').split()
-            sent = [w for w in sent if not ispunct(w, 'N')]
+            sent = [w for w in sent if not ispunct(w, 'UH')]
             tree = ParentedTree('SENTENCE', [])
             for i in range(len(sent)):
-                child = ParentedTree('N', [i])
+                child = ParentedTree('UH', [i])
                 tree.append(child)
             yield tree, sent, True
             continue
