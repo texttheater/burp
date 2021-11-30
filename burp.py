@@ -409,6 +409,7 @@ def read_discbracket(f: IO) -> Iterable[Tuple[ParentedTree, Sentence, bool]]:
             yield tree, sent, True
             continue
         # parse tree expression
+        line = line.split('\t')[0]
         reader = incrementaltreereader(line)
         tree, sent, rest = next(reader)
         assert not rest
