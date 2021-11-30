@@ -391,28 +391,15 @@ def pad(block: Sequence[str], margin: int=0) -> List[str]:
     ] # TODO grapheme cluster support
 
 
-def read_discbracket(f: IO) -> Iterable[Tuple[ParentedTree, Sentence, bool]]:
+def read_discbracket(f: IO, strict: bool=True) -> Iterable[Tuple[ParentedTree, Sentence]]:
     for line in f:
-        # skip empty lines
-        if not line.rstrip():
-            continue
-        # recognize "no parse" lines and return dummy tree (TODO make this
-        # configurable)
-        match = NO_PARSE_PATTERN.match(line)
-        if match:
-            sent = match.group('sentence').split()
-            sent = [w for w in sent if not ispunct(w, 'UH')]
-            tree = ParentedTree('SENTENCE', [])
-            for i in range(len(sent)):
-                child = ParentedTree('UH', [i])
-                tree.append(child)
-            yield tree, sent, True
-            continue
-        # parse tree expression
-        line = line.split('\t')[0]
         reader = incrementaltreereader(line)
-        tree, sent, rest = next(reader)
-        assert not rest
+        try:
+            tree, sent, _ = next(reader)
+        except (ValueError, StopIteration):
+            if not strict:
+                continue
+            raise
         # remove punctuation (TODO make this configurable)
         removeterminals(tree, sent, ispunct)
         # remove artifical root node (TODO make this configurable)
@@ -422,7 +409,15 @@ def read_discbracket(f: IO) -> Iterable[Tuple[ParentedTree, Sentence, bool]]:
         for subtree in tree.subtrees():
             subtree.label = FUNCTION_PATTERN.sub('', subtree.label)
         # yield
-        yield tree, sent, False
+        yield tree, sent
+
+
+def make_dummy_tree(sent: Sentence) -> ParentedTree:
+    tree = ParentedTree('SENTENCE', [])
+    for i in range(len(sent)):
+        child = ParentedTree('UH', [i])
+        tree.append(child)
+    return tree
 
 
 if __name__ == '__main__':
@@ -436,22 +431,27 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO)
     elif args.verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
+    with open(args.path1) as f:
+        sent_tree1_map = {
+            tuple(sent): tree
+            for tree, sent in read_discbracket(f, False)
+        }
     total_trees = 0
     total_consts = 0
     total_distance = 0.0
     not_parsed = 0
-    with open(args.path1) as f1, open(args.path2) as f2:
-        for (tree1, sent1, dummy1), (tree2, sent2, dummy2) in \
-                zip(read_discbracket(f1), read_discbracket(f2)):
-            assert sent1 == sent2
-            assert not dummy2
-            distance, script = burp(tree1, tree2, sent1)
+    with open(args.path2) as f:
+        for tree2, sent in read_discbracket(f):
+            if tuple(sent) in sent_tree1_map:
+                tree1 = sent_tree1_map[tuple(sent)]
+            else:
+                not_parsed += 1
+                tree1 = make_dummy_tree(sent)
+            distance, script = burp(tree1, tree2, sent)
             print(distance, script) # TODO make output format configurable
             total_trees += 1
             total_consts += sum(1 for _ in tree2.subtrees())
             total_distance += distance
-            if dummy1:
-                not_parsed += 1
     print(f'total trees:              {total_trees}')
     print(f'dummy trees:              {not_parsed}')
     print(f'total constituents:       {total_consts}')
