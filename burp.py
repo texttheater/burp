@@ -466,7 +466,7 @@ if __name__ == '__main__':
             resul = burp(tree1, tree2, sent1)
             print("BURP: ", resul)
             burp_scores.append(resul[0])
-            gold_brackets = find_constituents(tree1)
+            gold_brackets = find_constituents(tree2)
 
             norm_burp_scores.append(resul[0]/len(gold_brackets))
         else:
