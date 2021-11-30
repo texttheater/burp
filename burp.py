@@ -443,7 +443,7 @@ if __name__ == '__main__':
     with open(args.path2) as f:
         for tree2, sent in read_discbracket(f):
             if tuple(sent) in sent_tree1_map:
-                tree1 = sent_tree1_map[tuple(sent)]
+                tree1 = sent_tree1_map[tuple(sent)].copy(deep=True)
             else:
                 not_parsed += 1
                 tree1 = make_dummy_tree(sent)
