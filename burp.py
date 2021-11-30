@@ -435,9 +435,24 @@ if __name__ == '__main__':
         logging.basicConfig(level=logging.INFO)
     elif args.verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
+    total_trees = 0
+    total_consts = 0
+    total_distance = 0.0
+    not_parsed = 0
     with open(args.path1) as f1, open(args.path2) as f2:
         for (tree1, sent1, dummy1), (tree2, sent2, dummy2) in \
                 zip(read_discbracket(f1), read_discbracket(f2)):
             assert sent1 == sent2
             assert not dummy2
-            print(burp(tree1, tree2, sent1))
+            distance, script = burp(tree1, tree2, sent1)
+            print(distance, script) # TODO make output format configurable
+            total_trees += 1
+            total_consts += sum(1 for _ in tree2.subtrees())
+            total_distance += distance
+            if dummy1:
+                not_parsed += 1
+    print(f'total trees:              {total_trees}')
+    print(f'dummy trees:              {not_parsed}')
+    print(f'total constituents:       {total_consts}')
+    print(f'distance per tree:        {total_distance / total_trees}')
+    print(f'distance per constituent: {total_distance / total_consts}')
