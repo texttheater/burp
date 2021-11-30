@@ -8,21 +8,27 @@ import argparse
 import levenshtein
 import logging
 import os
+import re
 import sys
 
 
 from discodop.punctuation import PUNCTUATION
 from discodop.tree import DrawTree, ParentedTree
-from discodop.treebank import DiscBracketCorpusReader
+from discodop.treebank import incrementaltreereader
 from discodop.treetransforms import removeterminals
-from typing import Any, Callable, Dict, FrozenSet, Iterable, List, Sequence, \
-        Tuple, Union
+from typing import Any, Callable, Dict, FrozenSet, IO, Iterable, List, \
+        Sequence, Tuple, Union
 
 
 Action = str # for now
 Script = List[Action]
+Sentence = List[str]
 Span = FrozenSet[int]
 Subtree = Union[ParentedTree, int]
+
+
+FUNCTION_PATTERN = re.compile(r'-.*')
+NO_PARSE_PATTERN = re.compile(r'(?:# NO PARSE FOR: |\?\?# NO PARSE \+ )(?P<sentence>[^\n]+)$')
 
 
 def ispunct(word, tag):
@@ -385,6 +391,39 @@ def pad(block: Sequence[str], margin: int=0) -> List[str]:
     ] # TODO grapheme cluster support
 
 
+def read_discbracket(f: IO) -> Iterable[Tuple[ParentedTree, Sentence, bool]]:
+    for line in f:
+        # skip empty lines
+        if not line.rstrip():
+            continue
+        # recognize "no parse" lines and return dummy tree (TODO make this
+        # configurable)
+        match = NO_PARSE_PATTERN.match(line)
+        if match:
+            sent = match.group('sentence').split()
+            sent = [w for w in sent if not ispunct(w, 'N')]
+            tree = ParentedTree('SENTENCE', [])
+            for i in range(len(sent)):
+                child = ParentedTree('N', [i])
+                tree.append(child)
+            yield tree, sent, True
+            continue
+        # parse tree expression
+        reader = incrementaltreereader(line)
+        tree, sent, rest = next(reader)
+        assert not rest
+        # remove punctuation (TODO make this configurable)
+        removeterminals(tree, sent, ispunct)
+        # remove artifical root node (TODO make this configurable)
+        if len(tree) == 1 and tree.label == 'ROOT':
+            tree = tree[0].detach()
+        # remove function tags (TODO make this configurable)
+        for subtree in tree.subtrees():
+            subtree.label = FUNCTION_PATTERN.sub('', subtree.label)
+        # yield
+        yield tree, sent, False
+
+
 if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser(description=__doc__)
     arg_parser.add_argument('path1', help='source trees in .discbracket format')
@@ -392,29 +431,13 @@ if __name__ == '__main__':
     arg_parser.add_argument('-v', '--verbose', action='count', default=0,
             help='Verbosity. Give once for printing trees, twice for debugging.')
     args = arg_parser.parse_args()
-    inp1 = DiscBracketCorpusReader(args.path1)
-    inp2 = DiscBracketCorpusReader(args.path2)
     if args.verbose == 1:
         logging.basicConfig(level=logging.INFO)
     elif args.verbose >= 2:
         logging.basicConfig(level=logging.DEBUG)
-    for t1, t2 in zip(inp1.itertrees(), inp2.itertrees()):
-        # Read predicted and gold tree
-        key1, item1 = t1
-        key2, item2 = t2
-        assert key1 == key2
-        tree1 = item1.tree
-        sent1 = item1.sent
-        tree2 = item2.tree
-        sent2 = item2.sent
-        assert sent1 == sent2
-        # Remove punctuation (TODO make this configurable)
-        removeterminals(tree1, sent1, ispunct)
-        removeterminals(tree2, sent2, ispunct)
-        # Remove artifical root nodes (TODO make this configurable)
-        if len(tree1) == 1 and tree1.label == 'ROOT':
-            tree1 = tree1[0].detach()
-        if len(tree2) == 1 and tree2.label == 'ROOT':
-            tree2 = tree2[0].detach()
-        # Compute distance
-        print(burp(tree1, tree2, sent1))
+    with open(args.path1) as f1, open(args.path2) as f2:
+        for (tree1, sent1, dummy1), (tree2, sent2, dummy2) in \
+                zip(read_discbracket(f1), read_discbracket(f2)):
+            assert sent1 == sent2
+            assert not dummy2
+            print(burp(tree1, tree2, sent1))
