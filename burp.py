@@ -320,8 +320,10 @@ def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[flo
     assert span1 == span2
     cost = 0.0
     parts = [tree1]
-    logging.info('Source:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts)))
-    logging.info('Target:\n%s', pp_tree(tree2, sent))
+    if logging.getLogger().isEnabledFor(logging.INFO):
+        logging.info('Source:\n%s',
+                side_by_side(tuple(pp_tree(p, sent) for p in parts)))
+        logging.info('Target:\n%s', pp_tree(tree2, sent))
     mapping: Dict[Span, Subtree] = {frozenset((i,)): i for i in span2}
     script: Script = []
     for chain2 in chains(tree2):
@@ -333,8 +335,10 @@ def burp(tree1: ParentedTree, tree2: ParentedTree, sent: List[str]) -> Tuple[flo
         cost += new_cost
         logging.debug('xchain1: %s', pp_chain(xchain1))
         edit(xchain1, chain2, parts, mapping, script, sent)
-        logging.debug('Parts:\n%s', side_by_side(tuple(pp_tree(p, sent) for p in parts), 4))
-        logging.debug('Target:\n%s', pp_tree(tree2, sent))
+        if logging.getLogger().isEnabledFor(logging.DEBUG):
+            logging.debug('Parts:\n%s',
+                    side_by_side(tuple(pp_tree(p, sent) for p in parts), 4))
+            logging.debug('Target:\n%s', pp_tree(tree2, sent))
     # Assertions
     assert len(parts) == 1
     assert parts[0] == tree2
